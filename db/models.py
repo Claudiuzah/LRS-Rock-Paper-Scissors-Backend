@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID
 from typing import List, Optional
@@ -26,9 +28,6 @@ class User(Base):
     name: Mapped[str]
     password: Mapped[str]
     email: Mapped[str]
-    # discussions: Mapped[List["Discussion"]] = relationship(secondary=contacts_table, back_populates="contacts")
-    # messages: Mapped[List["Message"]] = relationship(back_populates="author")
-
 
     def __repr__(self):
         return {
@@ -39,50 +38,61 @@ class User(Base):
         }
 
 
-# class Discussion(Base):
-#     __tablename__ = "discussion"
-#
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-#     contacts_ids = Column(ARRAY(UUID(as_uuid=True)), nullable=False)
-#     name: Mapped[Optional[str]]
-#     group_name: Mapped[Optional[str]]
-#     status: Mapped[Optional[str]]
-#
-#     contacts: Mapped[List["User"]] = relationship(secondary=contacts_table, back_populates="discussions")
-#     messages: Mapped[List["Message"]] = relationship(back_populates="discussion")
-#
-#     def __repr__(self):
-#         return {
-#             "id": str(self.id),
-#             "contacts_ids": str(self.contacts_ids),
-#             "name": str(self.name),
-#             "group_name": str(self.group_name),
-#             "status": str(self.status),
-#         }
+class GameSession(Base):
+    __tablename__ = "game_session"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    lobby_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("lobby.id"))
+    winner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    start_time: Mapped[str]
+    end_time: Mapped[str]
+
+    def __repr__(self):
+        return {
+            "id": str(self.id),
+            "lobby_id": str(self.lobby_id),
+            "winner_id": str(self.winner_id),
+            "start_time": str(self.start_time),
+            "end_time": str(self.end_time)
+        }
 
 
-# class Message(Base):
-#     __tablename__ = "message"
-#
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-#     discussion_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("discussion.id"))
-#     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
-#     value: Mapped[str]
-#     date: Mapped[str]
-#     name: Mapped[str]
-#
-#     author: Mapped["User"] = relationship(back_populates="messages")
-#     discussion: Mapped["Discussion"] = relationship(back_populates="messages")
-#
-#     def __repr__(self):
-#         return {
-#             "id": str(self.id),
-#             "discussion_id": str(self.discussion_id),
-#             "user_id": str(self.user_id),
-#             "value": str(self.value),
-#             "date": str(self.date),
-#             "name": str(self.name),
-#         }
+class Lobby(Base):
+    __tablename__ = "lobby"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    lobby_name: Mapped[str]
+    rounds: Mapped[int]
+
+    def __repr__(self):
+        return {
+            "id": str(self.id),
+            "lobby_name": str(self.lobby_name),
+            "rounds": str(self.rounds)
+        }
+
+
+class Move(Base):
+    __tablename__ = "move"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    session_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("game_session.id"))
+    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    choice: Mapped[str] = mapped_column()
+
+    def __repr__(self):
+        return {
+            "id": str(self.id),
+            "session_id": str(self.session_id),
+            "player_id": str(self.player_id),
+            "choice": str(self)
+        }
+
+class History(Base):
+    __tablename__ = "history"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    opponent_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+
+    ###TREBUIE RECONFIGURAT DUPA ERD UL NOU
+    ## posibil local cache pentru history
 
 
 Base.metadata.create_all(engine)
