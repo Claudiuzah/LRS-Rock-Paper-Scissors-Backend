@@ -3,15 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.51">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G</Grants>
-      <IntrospectionStateNumber>798</IntrospectionStateNumber>
+      <IntrospectionStateNumber>801</IntrospectionStateNumber>
       <ServerVersion>16.1</ServerVersion>
       <StartupTime>1709554457</StartupTime>
       <TimeZones>true ACDT
@@ -812,7 +804,7 @@ false Zulu
 14697||10|C|G
 14697||-9223372036854775808|U|G
 14697||10|U|G</Grants>
-      <IntrospectionStateNumber>798</IntrospectionStateNumber>
+      <IntrospectionStateNumber>801</IntrospectionStateNumber>
       <ObjectId>24834</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
@@ -4236,8 +4228,8 @@ false Zulu
     <schema id="265" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>798</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2024-03-07.14:20:52</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>801</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2024-03-08.13:34:15</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>524</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -4248,54 +4240,72 @@ false Zulu
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="267" parent="265" name="lobby">
+    <table id="267" parent="265" name="history">
+      <ObjectId>24883</ObjectId>
+      <StateNumber>799</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="268" parent="265" name="lobby">
       <ObjectId>24842</ObjectId>
       <StateNumber>797</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="268" parent="265" name="user">
+    <table id="269" parent="265" name="move">
+      <ObjectId>24866</ObjectId>
+      <StateNumber>799</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="270" parent="265" name="user">
       <ObjectId>24835</ObjectId>
       <StateNumber>797</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <column id="269" parent="266" name="id">
+    <table id="271" parent="265" name="user_lobby">
+      <ObjectId>24898</ObjectId>
+      <StateNumber>800</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <column id="272" parent="266" name="id">
       <DasType>uuid|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>797</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="270" parent="266" name="lobby_id">
+    <column id="273" parent="266" name="lobby_id">
       <DasType>uuid|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>797</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="271" parent="266" name="winner_id">
+    <column id="274" parent="266" name="winner_id">
       <DasType>uuid|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>797</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="272" parent="266" name="start_time">
+    <column id="275" parent="266" name="start_time">
       <DasType>varchar|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>797</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="273" parent="266" name="end_time">
+    <column id="276" parent="266" name="end_time">
       <DasType>varchar|0s</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>797</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="274" parent="266" name="game_session_lobby_id_fkey">
+    <foreign-key id="277" parent="266" name="game_session_lobby_id_fkey">
       <ColNames>lobby_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24856</ObjectId>
@@ -4303,7 +4313,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>24842</RefTableId>
     </foreign-key>
-    <foreign-key id="275" parent="266" name="game_session_winner_id_fkey">
+    <foreign-key id="278" parent="266" name="game_session_winner_id_fkey">
       <ColNames>winner_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24861</ObjectId>
@@ -4311,7 +4321,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>24835</RefTableId>
     </foreign-key>
-    <index id="276" parent="266" name="game_session_pkey">
+    <index id="279" parent="266" name="game_session_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24854</ObjectId>
@@ -4320,35 +4330,88 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="277" parent="266" name="game_session_pkey">
+    <key id="280" parent="266" name="game_session_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24855</ObjectId>
       <Primary>1</Primary>
       <StateNumber>797</StateNumber>
       <UnderlyingIndexId>24854</UnderlyingIndexId>
     </key>
-    <column id="278" parent="267" name="id">
+    <column id="281" parent="267" name="id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="282" parent="267" name="player_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="283" parent="267" name="opponent_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <foreign-key id="284" parent="267" name="history_player_id_fkey">
+      <ColNames>player_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24888</ObjectId>
+      <StateNumber>799</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>24835</RefTableId>
+    </foreign-key>
+    <foreign-key id="285" parent="267" name="history_opponent_id_fkey">
+      <ColNames>opponent_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24893</ObjectId>
+      <StateNumber>799</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>24835</RefTableId>
+    </foreign-key>
+    <index id="286" parent="267" name="history_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24886</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>799</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="287" parent="267" name="history_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24887</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>799</StateNumber>
+      <UnderlyingIndexId>24886</UnderlyingIndexId>
+    </key>
+    <column id="288" parent="268" name="id">
       <DasType>uuid|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>797</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="279" parent="267" name="lobby_name">
+    <column id="289" parent="268" name="lobby_name">
       <DasType>varchar|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>797</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="280" parent="267" name="rounds">
+    <column id="290" parent="268" name="rounds">
       <DasType>integer|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>797</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="281" parent="267" name="lobby_pkey">
+    <index id="291" parent="268" name="lobby_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24847</ObjectId>
@@ -4357,42 +4420,102 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="282" parent="267" name="lobby_pkey">
+    <key id="292" parent="268" name="lobby_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24848</ObjectId>
       <Primary>1</Primary>
       <StateNumber>797</StateNumber>
       <UnderlyingIndexId>24847</UnderlyingIndexId>
     </key>
-    <column id="283" parent="268" name="id">
+    <column id="293" parent="269" name="id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="294" parent="269" name="session_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="295" parent="269" name="player_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="296" parent="269" name="choice">
+      <DasType>varchar|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="297" parent="269" name="move_session_id_fkey">
+      <ColNames>session_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24873</ObjectId>
+      <StateNumber>799</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>24849</RefTableId>
+    </foreign-key>
+    <foreign-key id="298" parent="269" name="move_player_id_fkey">
+      <ColNames>player_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24878</ObjectId>
+      <StateNumber>799</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>24835</RefTableId>
+    </foreign-key>
+    <index id="299" parent="269" name="move_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24871</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>799</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="300" parent="269" name="move_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24872</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>799</StateNumber>
+      <UnderlyingIndexId>24871</UnderlyingIndexId>
+    </key>
+    <column id="301" parent="270" name="id">
       <DasType>uuid|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>796</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="284" parent="268" name="name">
+    <column id="302" parent="270" name="name">
       <DasType>varchar|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>796</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="285" parent="268" name="password">
+    <column id="303" parent="270" name="password">
       <DasType>varchar|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>796</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="286" parent="268" name="email">
+    <column id="304" parent="270" name="email">
       <DasType>varchar|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>796</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="287" parent="268" name="user_pkey">
+    <index id="305" parent="270" name="user_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24840</ObjectId>
@@ -4401,12 +4524,65 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="288" parent="268" name="user_pkey">
+    <key id="306" parent="270" name="user_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24841</ObjectId>
       <Primary>1</Primary>
       <StateNumber>796</StateNumber>
       <UnderlyingIndexId>24840</UnderlyingIndexId>
+    </key>
+    <column id="307" parent="271" name="id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>800</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="308" parent="271" name="user_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>800</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="309" parent="271" name="lobby_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>800</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <foreign-key id="310" parent="271" name="user_lobby_user_id_fkey">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24903</ObjectId>
+      <StateNumber>800</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>24835</RefTableId>
+    </foreign-key>
+    <foreign-key id="311" parent="271" name="user_lobby_lobby_id_fkey">
+      <ColNames>lobby_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24908</ObjectId>
+      <StateNumber>800</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>24842</RefTableId>
+    </foreign-key>
+    <index id="312" parent="271" name="user_lobby_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24901</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>800</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="313" parent="271" name="user_lobby_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>24902</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>800</StateNumber>
+      <UnderlyingIndexId>24901</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>

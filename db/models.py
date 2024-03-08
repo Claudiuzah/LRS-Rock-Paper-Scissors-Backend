@@ -91,9 +91,23 @@ class History(Base):
     player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
     opponent_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
 
-    ###TREBUIE RECONFIGURAT DUPA ERD UL NOU
-    ## posibil local cache pentru history
+
+
+class UserLobby(Base):
+    __tablename__ = "user_lobby"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    lobby_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("lobby.id"))
 
 
 Base.metadata.create_all(engine)
 session = Session(engine)
+
+###TREBUIE RECONFIGURAT DUPA ERD UL NOU
+## posibil local cache pentru history
+
+# import hashlib
+#
+# password = input("Password: ")
+# password_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
+# print(f"Password Hash: {password_hash}")
