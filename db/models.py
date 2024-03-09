@@ -111,3 +111,11 @@ session = Session(engine)
 # password = input("Password: ")
 # password_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
 # print(f"Password Hash: {password_hash}")
+
+# user = User(
+#     name="georgica",
+#     password="georgica123",
+#     email="georgica@gmail.com"          ##TODO: testare cu api
+# )
+# session.add(user)
+# session.commit()
