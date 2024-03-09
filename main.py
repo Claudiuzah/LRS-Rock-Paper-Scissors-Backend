@@ -1,22 +1,34 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, status, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocket, WebSocketDisconnect
-
+from typing import Annotated
+from sqlalchemy.orm import Session
 from api.users.users import users_router
-#from api.websocket_manager.ws import ConnectionManager
+
+# from api.websocket_manager.ws import ConnectionManager
 
 app = FastAPI()
+
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
+#
+# db_dependency = Annotated[Session, Depends(get_db)]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=True,  ##pt frontend
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(users_router)
+
 # manager = ConnectionManager()
 #
 #
@@ -35,7 +47,5 @@ app.include_router(users_router)
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
-
 ## pip freeze > requirements.txt
 ## pip install -r requirements.txt  pentru instalare module
-

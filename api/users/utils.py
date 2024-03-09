@@ -12,16 +12,9 @@ def get_user_data(user_data):
 
 def create_user(user_data):
 
-    import hashlib
-
-    password = user_data.password
-
-    password_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
-    print(f"Password Hash: {password_hash}")
-
     user = User(
         name=user_data.name,
-        password=password_hash,
+        password=user_data.password,
         email=user_data.email
     )
     session.add(user)
