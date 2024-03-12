@@ -5,6 +5,8 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from typing import Annotated
 from sqlalchemy.orm import Session
 from api.users.users import users_router
+from api.lobby.lobby import lobby_router
+from api.users.auth import router
 
 # from api.websocket_manager.ws import ConnectionManager
 
@@ -28,6 +30,9 @@ app.add_middleware(
 )
 
 app.include_router(users_router)
+app.include_router(lobby_router)
+app.include_router(router)
+
 
 # manager = ConnectionManager()
 #

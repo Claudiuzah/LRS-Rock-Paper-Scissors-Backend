@@ -13,3 +13,11 @@ async def authenticate_user(user_data: UserCreate):
         user = create_user(user_data)
 
     return user
+
+
+#/api/login
+#post cu username si password in body
+#response = json cu token
+#daca exista user cu acele date in db ii dam acces
+#luam id, username
+#creem jwt

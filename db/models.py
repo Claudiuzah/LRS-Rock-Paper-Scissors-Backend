@@ -18,16 +18,13 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    name: Mapped[str]
-    password: Mapped[str]
-    email: Mapped[str]
-
+    username: Mapped[str]
+    hashed_password: Mapped[str]
     def __repr__(self):
         return {
             "id": str(self.id),
-            "name": str(self.name),
-            "password": str(self.password),
-            "email": str(self.email)
+            "username": str(self.username),
+            "password": str(self.hashed_password)
         }
 
 
