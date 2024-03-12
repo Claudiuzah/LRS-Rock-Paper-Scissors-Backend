@@ -16,7 +16,7 @@ router = APIRouter(
     tags=["auth"]
 )
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "secret"  # os.environ.get('SECRET_KEY')
 ALGORITHM = 'HS256'
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -75,10 +75,9 @@ def authenticate_user(username: str, password: str, db):
 
 
 def create_access_token(username: str, user_id: str, expires_delta: timedelta = timedelta()):
-    encode = {'sub': username, 'id': user_id}
-    expires = datetime.utcnow() + expires_delta
-    encode.update({'exp': expires})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+    encode = {'sub': username, 'id': str(user_id)}
+
+    return jwt.encode(encode, SECRET_KEY)
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
