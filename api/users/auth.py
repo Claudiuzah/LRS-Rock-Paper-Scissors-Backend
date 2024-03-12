@@ -12,11 +12,11 @@ from jose import JWTError, jwt
 import os
 
 router = APIRouter(
-    prefix="/auth",
+    prefix="/authenticate",
     tags=["auth"]
 )
 
-SECRET_KEY = "secret"  # os.environ.get('SECRET_KEY')
+SECRET_KEY = "secret"  #TODO: change this to a real secret key :)
 ALGORITHM = 'HS256'
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -43,7 +43,7 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency,
                       create_user_request: CreateUserRequest):
     create_user_model = User(
@@ -54,7 +54,7 @@ async def create_user(db: db_dependency,
     db.commit()
 
 
-@router.post("/token", response_model=Token)
+@router.post("/login", response_model=Token) #login token
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                                  db: db_dependency):
     user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
