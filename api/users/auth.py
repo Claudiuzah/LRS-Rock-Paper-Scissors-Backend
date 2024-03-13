@@ -12,7 +12,7 @@ from jose import JWTError, jwt
 import os
 
 router = APIRouter(
-    prefix="/authenticate",
+    prefix="/api/authenticate",
     tags=["auth"]
 )
 
@@ -90,3 +90,33 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         return {"username": username, "id": user_id}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user.")
+
+
+user_router = APIRouter(
+    prefix="/api/user",
+    tags=["auth"]
+)
+@user_router.get('/{user_id}')
+def get_user(user_id: str, db = Depends(get_db)):
+    user = db.query(User).filter_by(id=user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+# class UserUpdate(BaseModel):
+#     username: str
+#     ##TODO: add customisable profile
+# @user_router.put('/{user_id}')
+# def update_user(user_id: str, user_update: UserUpdate, db = Depends(get_db)):
+#     # Check if user exists
+#     user = db.query(User).filter_by(id=user_id).first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#
+#     # Update user data
+#     update_values = {"username": user_update.username}
+#     query = user.update().where(user.c.id == user_id).values(**update_values)
+#     db.execute(query)
+#     db.commit()
+#
+#     return {"message": "User updated successfully"} NU MERGE DEOCAMDATA
