@@ -6,7 +6,7 @@ from typing import List, Optional
 
 import uuid
 
-engine = create_engine("postgresql://postgres:1234@localhost:5432/RPSDB")
+engine = create_engine("postgresql://postgres:0000@localhost:5432/RPSDB")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
