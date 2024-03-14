@@ -6,7 +6,9 @@ from typing import List, Optional
 
 import uuid
 
-engine = create_engine("postgresql://postgres:1234@localhost:5432/RPSDB")
+DB_PASSWORD = "1234"
+DB_NAME = "RPSDB"
+engine = create_engine(f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/{DB_NAME}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
