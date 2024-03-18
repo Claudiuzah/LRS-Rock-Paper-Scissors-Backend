@@ -22,11 +22,13 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     username: Mapped[str]
     hashed_password: Mapped[str]
+
     def __repr__(self):
         return {
             "id": str(self.id),
             "username": str(self.username),
             "password": str(self.hashed_password)
+
         }
 
 
@@ -106,3 +108,4 @@ session = Session(engine)
 # session.commit()
 
 
+#TODO: sa fac sa nu mi creeze utilizator cu acelasi nume, sa rezolv butonul de login si register

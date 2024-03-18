@@ -6,6 +6,8 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from api.lobby.lobby import lobby_router
 from api.users.auth import router, user_router
+from db.models import SessionLocal
+from api.users.auth import get_current_user
 
 # from api.websocket_manager.ws import ConnectionManager
 
@@ -22,6 +24,31 @@ app.add_middleware(
 app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
+
+
+from typing import Annotated
+
+from fastapi import Depends, FastAPI
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[dict, Depends(get_current_user)]
+
+@app.get("/", status_code=status.HTTP_200_OK)
+async def user(user: user_dependency, db: db_dependency):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
+    return {"User": user}
+
 
 # manager = ConnectionManager()
 #
