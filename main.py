@@ -66,7 +66,7 @@ async def user(user: user_dependency, db: db_dependency):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="172.16.1.105", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 ## pip freeze > requirements.txt
 ## pip install -r requirements.txt  pentru instalare module

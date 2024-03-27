@@ -52,6 +52,9 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
     if existing_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username already exists")
 
+    if not validate_password(create_user_request.password):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid password")
+
     create_user_model = User(
         username=create_user_request.username,
         hashed_password=bcrypt_context.hash(create_user_request.password)
@@ -121,13 +124,5 @@ def validate_password(password: str) -> bool:
     if len(password) < 8:
         print(1)
         return False
-    elif re.search("[0-9]", password) is None:
-        print(2)
-        return False
-    elif re.search("[A-Z]", password) is None:
-        print(3)
-        return False
-    elif re.search("[^a-zA-Z0-9]", password) is None:
-        print(4)
-        return False
+
     return True
