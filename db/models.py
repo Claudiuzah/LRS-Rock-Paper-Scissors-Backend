@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
-from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship, Session, sessionmaker
+from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID, Integer, String, UniqueConstraint
 from typing import List, Optional
 
 import uuid
@@ -11,8 +11,15 @@ engine = create_engine("postgresql://postgres:0000@localhost:5432/RPSDB")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
+
+# class User(Base):
+#     __tablename__ = "users"
+#     __table_args__ = (UniqueConstraint('username', name='unique_username'),)  # Add unique constraint
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     username = Mapped[str]
+#     hashed_password = Mapped[str]
 
 class User(Base):
     __tablename__ = "user"
@@ -97,8 +104,7 @@ session = Session(engine)
 
 # user = User(
 #     name="georgica",
-#     password="georgica123",
-#     email="georgica@gmail.com"          ##TODO: testare cu api
+#     password="georgica123",         ##TODO: testare cu api
 # )
 # session.add(user)
 # session.commit()
