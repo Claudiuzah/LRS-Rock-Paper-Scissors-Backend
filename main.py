@@ -1,13 +1,12 @@
 import uvicorn
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from api.lobby.lobby import lobby_router
 from api.users.auth import router, user_router
 from db.models import SessionLocal
 from api.users.auth import get_current_user
-
-
+from starlette import status
 
 app = FastAPI()
 
@@ -25,7 +24,7 @@ app.include_router(user_router)
 
 from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -48,7 +47,6 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     return {"User": user}
-
 
 
 if __name__ == "__main__":

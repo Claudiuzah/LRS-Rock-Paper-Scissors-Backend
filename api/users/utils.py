@@ -16,6 +16,6 @@ def get_db():
 
 
 def calculate_total_points(user_id: str, db: Session) -> int:
-    # calculare pct totale meciuri, update db dupa meci
+    #calc total pts after every match
     total_points = 0
     return total_points
