@@ -6,6 +6,8 @@ lobby_router = APIRouter(
     prefix="/api/lobby",
     tags=["lobby"]
 )
+
+
 @lobby_router.post("/create")
 async def create_lobby(lobby_data: CreateLobby):
     lobby = get_lobby_data(lobby_data)
@@ -14,31 +16,33 @@ async def create_lobby(lobby_data: CreateLobby):
 
     return lobby
 
-# def get_user(user_id: str, db = Depends(get_db)):
-#     user = db.query(User).filter_by(id=user_id).first() referinta pt get lobby
-
 @lobby_router.get("/onlineplayers")
 async def online_players():
     pass
+
 
 @lobby_router.put("/invite")
 async def invite():
     pass
 
+
 @lobby_router.post("/user/choice")
 async def user_choice():
     pass
+
 
 @lobby_router.put("/playerstatus")
 async def player_status():
     pass
 
+
 @lobby_router.get("/points")
 async def points():
     pass
+
 
 @lobby_router.get("/{lobby_id}")
 async def get_lobby(lobby_id):
     pass
 
-# @refreshtoken_router.post("/refresh")
+

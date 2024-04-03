@@ -2,11 +2,10 @@ from datetime import datetime
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
 from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID
-from typing import List, Optional
 
 import uuid
 
-DB_PASSWORD = "1234"
+DB_PASSWORD = "0000"
 DB_NAME = "RPSDB"
 engine = create_engine(f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/{DB_NAME}")
 
@@ -15,6 +14,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
     pass
+
 
 class User(Base):
     __tablename__ = "user"
@@ -79,11 +79,13 @@ class Move(Base):
             "choice": str(self)
         }
 
+
 class History(Base):
     __tablename__ = "history"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
     opponent_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+
 
 class UserLobby(Base):
     __tablename__ = "user_lobby"
@@ -94,18 +96,3 @@ class UserLobby(Base):
 
 Base.metadata.create_all(engine)
 session = Session(engine)
-
-###TREBUIE RECONFIGURAT DUPA ERD UL NOU
-## posibil local cache pentru history
-
-
-# user = User(
-#     name="georgica",
-#     password="georgica123",
-#     email="georgica@gmail.com"          ##TODO: testare cu api
-# )
-# session.add(user)
-# session.commit()
-
-
-#TODO: sa fac sa nu mi creeze utilizator cu acelasi nume, sa rezolv butonul de login si register
