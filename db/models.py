@@ -39,14 +39,15 @@ class GameSession(Base):
     winner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
     start_time: Mapped[str]
     end_time: Mapped[str]
-
+    player_ids: Mapped[str]
     def __repr__(self):
         return {
             "id": str(self.id),
             "lobby_id": str(self.lobby_id),
             "winner_id": str(self.winner_id),
             "start_time": str(self.start_time),
-            "end_time": str(self.end_time)
+            "end_time": str(self.end_time),
+            "player_ids": str(self.player_ids)
         }
 
 

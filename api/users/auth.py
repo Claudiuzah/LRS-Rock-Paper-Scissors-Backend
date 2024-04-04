@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
-from db.models import SessionLocal
-from db.models import User
+from db.models import SessionLocal, User
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -66,7 +65,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
 
 
 TOKEN_EXPIRATION_DAYS = 30
-@router.post("/login", response_model=Token)
+@router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
     user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
     if not user:
