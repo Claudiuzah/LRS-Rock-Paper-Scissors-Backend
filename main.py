@@ -3,7 +3,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from api.lobby.lobby import lobby_router
-from api.users.auth import router, user_router
+from api.users.auth import router
+from api.users.user import user_router
 from db.models import SessionLocal
 from api.users.auth import get_current_user
 from starlette import status

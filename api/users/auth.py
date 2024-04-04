@@ -110,7 +110,6 @@ user_router = APIRouter(
 )
 
 
-@user_router.get('/{user_id}')
 def get_user(user_id: str, db=Depends(get_db)):
     user = db.query(User).filter_by(id=user_id).first()
     if not user:

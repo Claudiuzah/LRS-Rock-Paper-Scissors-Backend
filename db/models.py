@@ -37,6 +37,7 @@ class GameSession(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     lobby_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("lobby.id"))
     winner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    player_ids = Mapped[ARRAY[uuid.UUID]]
     start_time: Mapped[str]
     end_time: Mapped[str]
 
@@ -45,6 +46,7 @@ class GameSession(Base):
             "id": str(self.id),
             "lobby_id": str(self.lobby_id),
             "winner_id": str(self.winner_id),
+            "player_ids": self.player_ids,
             "start_time": str(self.start_time),
             "end_time": str(self.end_time)
         }
