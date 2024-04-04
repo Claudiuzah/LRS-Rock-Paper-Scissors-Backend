@@ -4,13 +4,19 @@ from sqlalchemy.orm import Session
 from db.models import User, GameSession
 from api.users.utils import get_db
 from api.users.models import UserProfileStatistics
-import uuid
+from uuid import UUID
 
 user_router = APIRouter(prefix="/api/user", tags=["user"])
 
 
 @user_router.get("/{user_id}", response_model=UserProfileStatistics, status_code=status.HTTP_200_OK)
 async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends(get_db)):
+    try:
+
+        UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID format")
+
     user = db.query(User).filter_by(id=user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
