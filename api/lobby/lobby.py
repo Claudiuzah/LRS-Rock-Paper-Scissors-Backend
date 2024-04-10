@@ -26,23 +26,32 @@ async def create_lobby(lobby_data: CreateLobby):
 
 # def get_user(user_id: str, db = Depends(get_db)):
 #     user = db.query(User).filter_by(id=user_id).first() reference pt get lobby
+from requests import get as requests
 
-@lobby_router.get("/online_players")
-async def online_players():
-    pass
+def get_online_users(api_url):
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            online_users = response.json()
+            return online_users
+        else:
+            raise HTTPException(status_code=response.status_code, detail="Failed to fetch online users")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while fetching online users")
 
-
-@lobby_router.post("/invite")
-def invite_to_lobby(invite_request: models.InviteRequest, db: Session = Depends(get_db)):
-    if invite_request.invite_code:
-        invite_by_code(invite_request.invite_code, invite_request.lobby_id, db)
+# Define the route handler
+@lobby_router.get("/online_users")
+async def fetch_online_users():
+    api_url = "https://example.com/get_online_users"  # Replace with your actual API URL
+    online_users = get_online_users(api_url)
+    if online_users:
+        return online_users
     else:
-        raise HTTPException(status_code=400, detail="Invalid invite request")
+        raise HTTPException(status_code=500, detail="Failed to fetch online users")
 
 
-def invite_by_code(invite_code: str, lobby_id: int, db: Session):
-    # Implement logic to handle invitation by code
-    lobby = crud.get_lobby_by_invite_code(db, invite_code)
+def invite_by_name(lobby_name: str, lobby_id: int, db: Session):
+    lobby = crud.get_lobby_by_lobby_name(db, lobby_name)
     if lobby:
         pass
         #TODO: Lobby found, add player to lobby

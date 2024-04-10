@@ -12,4 +12,4 @@ class LobbyBase(BaseModel):
 
 class InviteRequest(BaseModel):
     lobby_id: str
-    invite_code: str
+    lobby_name: str
