@@ -16,7 +16,7 @@ router = APIRouter(
     tags=["auth"]
 )
 
-SECRET_KEY = "secret"  # TODO: change this to a real secret key :)
+SECRET_KEY = "secret"  #
 ALGORITHM = 'HS256'
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -66,6 +66,7 @@ TOKEN_EXPIRATION_DAYS = 30
 
 
 @router.post("/token", response_model=Token)
+
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
     user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
     if not user:
@@ -109,7 +110,6 @@ user_router = APIRouter(
 )
 
 
-@user_router.get('/{user_id}')
 def get_user(user_id: str, db=Depends(get_db)):
     user = db.query(User).filter_by(id=user_id).first()
     if not user:

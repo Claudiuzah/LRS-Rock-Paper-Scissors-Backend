@@ -23,7 +23,6 @@ async def create_lobby(lobby_data: CreateLobby):
 
     return lobby
 
-
 from requests import get as requests
 
 def get_online_users(api_url):
@@ -57,6 +56,8 @@ def invite_by_name(lobby_name: str, lobby_id: int, db: Session):
     else:
         raise HTTPException(status_code=404, detail="Invalid invite code")
 
+# >>>>>>> abcb736d6ea56b2d6331f21b6e7d504aa2fcddae
+
 
 @lobby_router.post("/user/choice")
 async def user_choice():
@@ -64,8 +65,10 @@ async def user_choice():
 
 
 @lobby_router.put("/player_status")
+# >>>>>>> abcb736d6ea56b2d6331f21b6e7d504aa2fcddae
 async def player_status():
     pass#online offline
+
 
 
 @lobby_router.get("/points")
@@ -78,3 +81,4 @@ async def get_lobby():
     pass
 
 # @refresh-token_router.post("/refresh")
+
