@@ -5,9 +5,18 @@ from sqlalchemy import ForeignKey, create_engine, ARRAY
 
 import uuid
 
-DB_PASSWORD = "1234"
+# DB_NAME = "dual-usv-2023-2025-lrs-database"
+# DB_PASSWORD = "jumpysnail71"
+# USERNAME = "lrs"
+# HOSTNAME = "dual-usv-2023-2025-postgre-server.postgres.database.azure.com"
+
 DB_NAME = "RPSDB"
-engine = create_engine(f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/{DB_NAME}")
+DB_PASSWORD = "1234"
+USERNAME = "postgres"
+HOSTNAME = "localhost"
+
+
+engine = create_engine(f"postgresql://{USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -35,7 +44,7 @@ class User(Base):
 class Lobby(Base):
     __tablename__ = "lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))#tb cu relationship
     lobby_name: Mapped[str]
     rounds: Mapped[int]
 

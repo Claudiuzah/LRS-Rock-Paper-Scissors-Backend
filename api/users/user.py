@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from db.models import User, GameSession
 from api.users.utils import get_db
 from api.users.models import UserProfileStatistics
+from dependencies import get_current_user
 
 # from uuid import UUID
 
@@ -11,7 +12,9 @@ user_router = APIRouter(prefix="/api/user", tags=["user"])
 
 
 @user_router.get("/{user_id}", response_model=UserProfileStatistics, status_code=status.HTTP_200_OK)
-async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends(get_db)):
+async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends(get_db),user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     try:
         total_wins = db.query(GameSession).filter_by(winner_id=str(user_id)).count()
     except Exception:
