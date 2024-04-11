@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, create_engine, ARRAY
 
 import uuid
 
-DB_PASSWORD = "0000"
+DB_PASSWORD = "1234"
 DB_NAME = "RPSDB"
 engine = create_engine(f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/{DB_NAME}")
 
