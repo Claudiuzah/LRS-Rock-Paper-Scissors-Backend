@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, create_engine, ARRAY
 
 import uuid
 
-DB_PASSWORD = "0000"
+DB_PASSWORD = "1234"
 DB_NAME = "RPSDB"
 engine = create_engine(f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/{DB_NAME}")
 
@@ -35,6 +35,7 @@ class User(Base):
 class Lobby(Base):
     __tablename__ = "lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
     lobby_name: Mapped[str]
     rounds: Mapped[int]
 
@@ -43,7 +44,7 @@ class Lobby(Base):
         return {
             "id": str(self.id),
             "lobby_name": str(self.lobby_name),
-            "rounds": str(self.rounds)
+            "rounds": int(self.rounds)
         }
 
 

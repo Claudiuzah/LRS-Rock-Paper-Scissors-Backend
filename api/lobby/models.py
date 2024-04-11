@@ -1,14 +1,17 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class CreateLobby(BaseModel):
-    user_id: str = None
-    username: str = None
+    lobby_name: str
+    user_id: str
+    rounds: int = 1
 
 
 class LobbyBase(BaseModel):
     round_number: int
     lobby_name: str
+
 
 class InviteRequest(BaseModel):
     lobby_id: str

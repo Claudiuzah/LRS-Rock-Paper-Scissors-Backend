@@ -53,7 +53,7 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="172.16.1.89", port=8000)
-
+    uvicorn.run(app, host="localhost", port=8000)
+#172.16.1.91
 ## pip freeze > requirements.txt
 ## pip install -r requirements.txt  pentru instalare module

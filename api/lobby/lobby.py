@@ -1,15 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Annotated
 
-from api.lobby.utils import  create_lobby
+from api.lobby.utils import create_lobby
 from api.lobby.models import CreateLobby
-from api.lobby.utils import get_db, get_lobby_data
+from api.lobby.utils import get_db, get_lobby_data, db_dependency
 from sqlalchemy.orm import Session
 from . import crud, models
 from requests import get as requests
-
-
-db_dependency = Annotated[Session, Depends(get_db)]
+from db.models import Lobby
 
 lobby_router = APIRouter(
     prefix="/api/lobby",
@@ -17,13 +15,18 @@ lobby_router = APIRouter(
 )
 
 
-@lobby_router.post("/create")
-async def create_lobby(lobby_data: CreateLobby):
-    lobby = get_lobby_data()
-    if lobby is None:
-        lobby = create_lobby(lobby_data)
+@lobby_router.post("/create",status_code=201)
+async def create_lobby(db:db_dependency,lobby_data: CreateLobby):
+    existing_lobby = db.query(Lobby).filter(Lobby.lobby_name == lobby_data.lobby_name).first()
+    if existing_lobby:
+        raise HTTPException(status_code=401, detail="Lobby already exists")
+    else:
+        create_lobby_model = Lobby(lobby_name=lobby_data.lobby_name, rounds=lobby_data.rounds,user_id=lobby_data.user_id)
 
-    return lobby
+        db.add(create_lobby_model)
+        db.commit()
+        return {"message": "Lobby created successfully"}
+
 
 
 def get_online_users(api_url):
@@ -36,6 +39,7 @@ def get_online_users(api_url):
             raise HTTPException(status_code=response.status_code, detail="Failed to fetch online users")
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred while fetching online users")
+
 
 # Define the route handler
 @lobby_router.get("/online_users")
@@ -52,10 +56,11 @@ def invite_by_name(lobby_name: str, lobby_id: int, db: Session):
     lobby = crud.get_lobby_by_lobby_name(db, lobby_name)
     if lobby:
         pass
-        #TODO: Lobby found, add player to lobby
-        #TODO: Implement logic to add player to the lobby
+        # TODO: Lobby found, add player to lobby
+        # TODO: Implement logic to add player to the lobby
     else:
         raise HTTPException(status_code=404, detail="Invalid invite code")
+
 
 # >>>>>>> abcb736d6ea56b2d6331f21b6e7d504aa2fcddae
 
@@ -68,8 +73,7 @@ async def user_choice():
 @lobby_router.put("/player_status")
 # >>>>>>> abcb736d6ea56b2d6331f21b6e7d504aa2fcddae
 async def player_status():
-    pass#online offline
-
+    pass  # online offline
 
 
 @lobby_router.get("/points")
@@ -82,4 +86,3 @@ async def get_lobby():
     pass
 
 # @refresh-token_router.post("/refresh")
-
