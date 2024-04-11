@@ -1,6 +1,7 @@
 from db.models import SessionLocal
-from db.models import User
 from fastapi import APIRouter, Depends, HTTPException
+from db.models import Lobby
+
 
 
 def get_db():
@@ -11,8 +12,10 @@ def get_db():
         db.close()
 
 
-def get_lobby_data(db=Depends(get_db)):
-    lobby_data = db.query(User).filter_by(id=user_id).first()
+def get_lobby_data(id: str, lobby_name=str, db=Depends(get_db)):
+    data = db.query(Lobby).filter_by(id=Lobby.id).first().filter_by(lobby_name=Lobby.name).first()
+    return data
+
 
 
 def create_lobby():

@@ -32,6 +32,21 @@ class User(Base):
         }
 
 
+class Lobby(Base):
+    __tablename__ = "lobby"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    lobby_name: Mapped[str]
+    rounds: Mapped[int]
+
+
+    def __repr__(self):
+        return {
+            "id": str(self.id),
+            "lobby_name": str(self.lobby_name),
+            "rounds": str(self.rounds)
+        }
+
+
 class GameSession(Base):
     __tablename__ = "game_session"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -40,6 +55,7 @@ class GameSession(Base):
     player_ids = Mapped[ARRAY[uuid.UUID]]
     start_time: Mapped[str]
     end_time: Mapped[str]
+    player_ids: Mapped[str]
 
     def __repr__(self):
         return {
@@ -48,21 +64,8 @@ class GameSession(Base):
             "winner_id": str(self.winner_id),
             "player_ids": self.player_ids,
             "start_time": str(self.start_time),
-            "end_time": str(self.end_time)
-        }
-
-
-class Lobby(Base):
-    __tablename__ = "lobby"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    lobby_name: Mapped[str]
-    rounds: Mapped[int]
-
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "lobby_name": str(self.lobby_name),
-            "rounds": str(self.rounds)
+            "end_time": str(self.end_time),
+            "player_ids": str(self.player_ids)
         }
 
 
@@ -98,3 +101,16 @@ class UserLobby(Base):
 
 Base.metadata.create_all(engine)
 session = Session(engine)
+
+
+###TREBUIE RECONFIGURAT DUPA ERD UL NOU
+## posibil local cache pentru history
+
+
+
+# session.add(user)
+# session.commit()
+
+
+# TODO: sa fac sa nu mi creeze utilizator cu acelasi nume, sa rezolv butonul de login si register
+
