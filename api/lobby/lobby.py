@@ -6,6 +6,8 @@ from api.lobby.models import CreateLobby
 from api.lobby.utils import get_db, get_lobby_data
 from sqlalchemy.orm import Session
 from . import crud, models
+from requests import get as requests
+
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -23,7 +25,6 @@ async def create_lobby(lobby_data: CreateLobby):
 
     return lobby
 
-from requests import get as requests
 
 def get_online_users(api_url):
     try:
