@@ -43,7 +43,7 @@ async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends
     )
 
 
-# todo return userrname
+# todo return username
 def get_user(user_id: str, db=Depends(get_db)):
     user = db.query(User).filter_by(id=user_id).first()
     if not user:
