@@ -33,6 +33,7 @@ async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends
         loss_percentage = 0
 
     return UserProfileStatistics(
+        username=user.username,
         total_games=total_games,
         total_wins=total_wins,
         # total_points=total_points,

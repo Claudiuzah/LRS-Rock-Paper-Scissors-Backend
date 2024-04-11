@@ -8,6 +8,7 @@ from api.users.user import user_router
 from db.models import SessionLocal
 from api.users.auth import get_current_user
 from starlette import status
+# from api.leaderboard.leaderboard_top_10 import leaderboard_router
 
 app = FastAPI()
 
@@ -22,6 +23,7 @@ app.add_middleware(
 app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
+# app.include_router(leaderboard_router)
 
 from typing import Annotated
 
@@ -51,4 +53,4 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="172.16.1.18", port=8000)
+    uvicorn.run(app, host="172.16.1.89", port=8000)
