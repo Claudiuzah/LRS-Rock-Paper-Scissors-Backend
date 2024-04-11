@@ -24,8 +24,6 @@ async def create_lobby(lobby_data: CreateLobby):
     return lobby
 
 
-# def get_user(user_id: str, db = Depends(get_db)):
-#     user = db.query(User).filter_by(id=user_id).first() reference pt get lobby
 from requests import get as requests
 
 def get_online_users(api_url):
@@ -67,7 +65,7 @@ async def user_choice():
 
 @lobby_router.put("/player_status")
 async def player_status():
-    pass
+    pass#online offline
 
 
 @lobby_router.get("/points")
