@@ -16,16 +16,4 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-
-def get_lobby_data(lobby_data,Session):
-    data = Session.query(Lobby).filter(Lobby.lobby_name == lobby_data.lobby_name).first()
-    return data
-
-
-def create_lobby(db: db_dependency, lobby_data):
-    create_lobby_model = Lobby(
-        lobby_name=lobby_data.lobby_name)
-
-    db.add(create_lobby_model)
-    db.commit()
-    return {"message": "Lobby created successfully"}
+#nu cred ca mai am nevoie de acest fisier

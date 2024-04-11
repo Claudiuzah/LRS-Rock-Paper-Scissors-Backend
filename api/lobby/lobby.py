@@ -1,11 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Annotated
-
-from api.lobby.utils import create_lobby
+from fastapi import status
 from api.lobby.models import CreateLobby
-from api.lobby.utils import get_db, get_lobby_data, db_dependency
+from api.lobby.utils import db_dependency
+from dependencies import get_current_user
 from sqlalchemy.orm import Session
-from . import crud, models
+from . import crud
 from requests import get as requests
 from db.models import Lobby
 
@@ -15,21 +14,24 @@ lobby_router = APIRouter(
 )
 
 
-@lobby_router.post("/create",status_code=201)
-async def create_lobby(db:db_dependency,lobby_data: CreateLobby):
+@lobby_router.post("/create")
+def create_lobby(db: db_dependency, lobby_data: CreateLobby, user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
+
     existing_lobby = db.query(Lobby).filter(Lobby.lobby_name == lobby_data.lobby_name).first()
     if existing_lobby:
         raise HTTPException(status_code=401, detail="Lobby already exists")
-    else:
-        create_lobby_model = Lobby(lobby_name=lobby_data.lobby_name, rounds=lobby_data.rounds,user_id=lobby_data.user_id)
+    create_lobby_model = Lobby(lobby_name=lobby_data.lobby_name, rounds=lobby_data.rounds, user_id=lobby_data.user_id)
 
-        db.add(create_lobby_model)
-        db.commit()
-        return {"message": "Lobby created successfully"}
-
+    db.add(create_lobby_model)
+    db.commit()
+    return {"message": "Lobby created successfully"}
 
 
-def get_online_users(api_url):
+def get_online_users(api_url, user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     try:
         response = requests.get(api_url)
         if response.status_code == 200:
@@ -41,9 +43,10 @@ def get_online_users(api_url):
         raise HTTPException(status_code=500, detail="An error occurred while fetching online users")
 
 
-# Define the route handler
 @lobby_router.get("/online_users")
-async def fetch_online_users():
+async def fetch_online_users(user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     api_url = "https://example.com/get_online_users"  # Replace with your actual API URL
     online_users = get_online_users(api_url)
     if online_users:
@@ -62,27 +65,29 @@ def invite_by_name(lobby_name: str, lobby_id: int, db: Session):
         raise HTTPException(status_code=404, detail="Invalid invite code")
 
 
-# >>>>>>> abcb736d6ea56b2d6331f21b6e7d504aa2fcddae
-
-
 @lobby_router.post("/user/choice")
-async def user_choice():
+async def user_choice(user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     pass
 
 
 @lobby_router.put("/player_status")
-# >>>>>>> abcb736d6ea56b2d6331f21b6e7d504aa2fcddae
-async def player_status():
+async def player_status(user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     pass  # online offline
 
 
 @lobby_router.get("/points")
-async def points():
+async def points(user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     pass
 
 
 @lobby_router.get("/{lobby_id}")
-async def get_lobby():
+async def get_lobby(user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     pass
-
-# @refresh-token_router.post("/refresh")

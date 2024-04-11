@@ -23,7 +23,7 @@ app.add_middleware(
 app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
-#app.include_router(leaderboard_router)
+# app.include_router(leaderboard_router)
 
 from typing import Annotated
 
@@ -42,7 +42,7 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-user_dependency = Annotated[dict, Depends(get_current_user)]
+# user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 @app.get("/", status_code=status.HTTP_200_OK)
@@ -53,7 +53,7 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="10.80.113.68", port=8000)
 #172.16.1.91
 ## pip freeze > requirements.txt
 ## pip install -r requirements.txt  pentru instalare module
