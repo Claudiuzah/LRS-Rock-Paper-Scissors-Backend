@@ -1,7 +1,7 @@
-from datetime import datetime
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker
+from sqlalchemy import ForeignKey, create_engine, ARRAY
+#from datetime import datetime
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
-from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID
 
 import uuid
 

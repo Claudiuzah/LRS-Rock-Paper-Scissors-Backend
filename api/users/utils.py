@@ -14,7 +14,7 @@ def get_db():
     finally:
         db.close()
 
-
+#TODO
 def calculate_total_points(user_id: str, db: Session) -> int:
     #calc total pts after every match
     total_points = 0

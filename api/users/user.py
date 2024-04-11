@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from db.models import User, GameSession
 from api.users.utils import get_db
 from api.users.models import UserProfileStatistics
-from uuid import UUID
+
+# from uuid import UUID
 
 user_router = APIRouter(prefix="/api/user", tags=["user"])
 
@@ -21,7 +22,7 @@ async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     total_games = 0
-    game_sesions = db.query(GameSession).all()
+    #game_sesions = db.query(GameSession).all()
 
     # total_points = calculate_total_points(user_id, db)
 
@@ -33,9 +34,18 @@ async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends
         loss_percentage = 0
 
     return UserProfileStatistics(
+        username=user.username,
         total_games=total_games,
         total_wins=total_wins,
         # total_points=total_points,
         win_percentage=win_percentage,
         loss_percentage=loss_percentage
     )
+
+
+# todo return userrname
+def get_user(user_id: str, db=Depends(get_db)):
+    user = db.query(User).filter_by(id=user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
