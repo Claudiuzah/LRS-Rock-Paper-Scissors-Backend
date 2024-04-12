@@ -7,7 +7,12 @@ from sqlalchemy.orm import Session
 from api.lobby.crud import *
 from requests import get as requests
 from db.models import Lobby
-from Settings import HOST, PORT
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+HOST = os.getenv("HOST")
+PORT = os.getenv("PORT")
 
 lobby_router = APIRouter(
     prefix="/api/lobby",

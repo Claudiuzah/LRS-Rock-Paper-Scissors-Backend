@@ -1,14 +1,20 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker
 from sqlalchemy import ForeignKey, create_engine, ARRAY
-from Settings import USERNAME, DB_PASSWORD, DB_NAME, HOSTNAME
+
+DB_USERNAME = os.getenv("DB_USERNAME")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+HOSTNAME = os.getenv("HOSTNAME")
 # from datetime import datetime
 
 
 import uuid
 
-
-
-engine = create_engine(f"postgresql://{USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
+engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
