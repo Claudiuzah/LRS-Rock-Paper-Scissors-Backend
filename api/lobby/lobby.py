@@ -4,9 +4,10 @@ from api.lobby.models import CreateLobby
 from api.lobby.utils import db_dependency
 from dependencies import get_current_user
 from sqlalchemy.orm import Session
-from . import crud
+from api.lobby.crud import *
 from requests import get as requests
 from db.models import Lobby
+from Settings import HOST, PORT
 
 lobby_router = APIRouter(
     prefix="/api/lobby",
@@ -47,7 +48,7 @@ def get_online_users(api_url, user: dict = Depends(get_current_user)):
 async def fetch_online_users(user: dict = Depends(get_current_user)):
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
-    api_url = "https://example.com/get_online_users"  # Replace with your actual API URL
+    api_url = f"https://{HOST}:{PORT}/"
     online_users = get_online_users(api_url)
     if online_users:
         return online_users
@@ -56,7 +57,7 @@ async def fetch_online_users(user: dict = Depends(get_current_user)):
 
 
 def invite_by_name(lobby_name: str, lobby_id: int, db: Session):
-    lobby = crud.get_lobby_by_lobby_name(db, lobby_name)
+    lobby = get_lobby_by_lobby_name(db, lobby_name)
     if lobby:
         pass
         # TODO: Lobby found, add player to lobby

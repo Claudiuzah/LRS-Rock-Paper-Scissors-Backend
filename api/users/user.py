@@ -12,7 +12,8 @@ user_router = APIRouter(prefix="/api/user", tags=["user"])
 
 
 @user_router.get("/{user_id}", response_model=UserProfileStatistics, status_code=status.HTTP_200_OK)
-async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends(get_db),user: dict = Depends(get_current_user)):
+async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends(get_db),
+                                 user: dict = Depends(get_current_user)):
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     try:
@@ -25,7 +26,7 @@ async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     total_games = 0
-    #game_sesions = db.query(GameSession).all()
+    # game_sesions = db.query(GameSession).all()
 
     # total_points = calculate_total_points(user_id, db)
 
