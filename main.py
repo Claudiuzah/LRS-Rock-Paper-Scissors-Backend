@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
+
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,7 +16,9 @@ from starlette import status
 from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-from Settings import HOST, PORT
+
+HOST = os.getenv("HOST")
+PORT = os.getenv("PORT")
 
 # from api.leaderboard.leaderboard_top_10 import leaderboard_router
 
@@ -52,9 +59,8 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
     return {"User": user}
 
 
-
 if __name__ == "__main__":
-    uvicorn.run(app, host=HOST, port=PORT)
-# 172.16.1.91
-# pip freeze > requirements.txt
-# pip install -r requirements.txt  For installing requirements
+    uvicorn.run(app, host=HOST, port=int(PORT))
+    # 172.16.1.91
+    # pip freeze > requirements.txt
+    # pip install -r requirements.txt  For installing requirements

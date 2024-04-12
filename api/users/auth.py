@@ -8,7 +8,9 @@ from db.models import SessionLocal, User
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
-from Settings import SECRET_KEY, ALGORITHM
+import os
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 
 router = APIRouter(
     prefix="/auth",
