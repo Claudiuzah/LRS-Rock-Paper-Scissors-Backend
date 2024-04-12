@@ -1,19 +1,11 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker
 from sqlalchemy import ForeignKey, create_engine, ARRAY
-#from datetime import datetime
+from Settings import USERNAME, DB_PASSWORD, DB_NAME, HOSTNAME
+# from datetime import datetime
 
 
 import uuid
 
-# DB_NAME = "dual-usv-2023-2025-lrs-database"
-# DB_PASSWORD = "jumpysnail71"
-# USERNAME = "lrs"
-# HOSTNAME = "dual-usv-2023-2025-postgre-server.postgres.database.azure.com"
-
-DB_NAME = "RPSDB"
-DB_PASSWORD = "1234"
-USERNAME = "postgres"
-HOSTNAME = "localhost"
 
 
 engine = create_engine(f"postgresql://{USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
@@ -44,10 +36,9 @@ class User(Base):
 class Lobby(Base):
     __tablename__ = "lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))#tb cu relationship
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))  # tb cu relationship
     lobby_name: Mapped[str]
     rounds: Mapped[int]
-
 
     def __repr__(self):
         return {
@@ -72,7 +63,6 @@ class GameSession(Base):
             "id": str(self.id),
             "lobby_id": str(self.lobby_id),
             "winner_id": str(self.winner_id),
-            "player_ids": self.player_ids,
             "start_time": str(self.start_time),
             "end_time": str(self.end_time),
             "player_ids": str(self.player_ids)
@@ -112,15 +102,5 @@ class UserLobby(Base):
 Base.metadata.create_all(engine)
 session = Session(engine)
 
-
-###TREBUIE RECONFIGURAT DUPA ERD UL NOU
-## posibil local cache pentru history
-
-
-
-# session.add(user)
-# session.commit()
-
-
-# TODO: sa fac sa nu mi creeze utilizator cu acelasi nume, sa rezolv butonul de login si register
-
+# TREBUIE RECONFIGURAT DUPA ERD UL NOU
+# posibil local cache pentru history

@@ -8,14 +8,19 @@ from api.users.user import user_router
 from db.models import SessionLocal
 from api.users.auth import get_current_user
 from starlette import status
-#from api.leaderboard.leaderboard_top_10 import leaderboard_router
+from typing import Annotated
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+from Settings import HOST, PORT
+
+# from api.leaderboard.leaderboard_top_10 import leaderboard_router
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,  ##pt frontend
+    allow_credentials=True,  # pt frontend
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -25,10 +30,6 @@ app.include_router(router)
 app.include_router(user_router)
 # app.include_router(leaderboard_router)
 
-from typing import Annotated
-
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -42,7 +43,6 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-# user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 @app.get("/", status_code=status.HTTP_200_OK)
@@ -52,8 +52,9 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
     return {"User": user}
 
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="10.80.113.68", port=8000)
-#172.16.1.91
-## pip freeze > requirements.txt
-## pip install -r requirements.txt  pentru instalare module
+    uvicorn.run(app, host=HOST, port=PORT)
+# 172.16.1.91
+# pip freeze > requirements.txt
+# pip install -r requirements.txt  For installing requirements
