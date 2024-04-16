@@ -22,12 +22,18 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     username: Mapped[str]
     hashed_password: Mapped[str]
+    total_games: Mapped[int]
+    total_wins: Mapped[int]
+    total_points: Mapped[int]
 
     def __repr__(self):
         return {
             "id": str(self.id),
             "username": str(self.username),
-            "password": str(self.hashed_password)
+            "password": str(self.hashed_password),
+            "total_games": str(self.total_games),
+            "total_wins": str(self.total_wins),
+            "total_points":str(self.total_points)
 
         }
 
