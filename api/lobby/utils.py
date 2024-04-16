@@ -1,6 +1,7 @@
 from db.models import SessionLocal
-from db.models import User
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import Depends
+from typing import Annotated
+from sqlalchemy.orm import Session
 
 
 def get_db():
@@ -11,9 +12,6 @@ def get_db():
         db.close()
 
 
-def get_lobby_data(db=Depends(get_db)):
-    lobby_data = db.query(User).filter_by(id=user_id).first()
+db_dependency = Annotated[Session, Depends(get_db)]
 
-
-def create_lobby():
-    pass
+# nu cred ca mai am nevoie de acest fisier

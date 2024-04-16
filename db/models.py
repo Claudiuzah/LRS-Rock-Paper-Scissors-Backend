@@ -1,13 +1,20 @@
-from datetime import datetime
+import os
+from dotenv import load_dotenv
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
-from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID
+load_dotenv()
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker
+from sqlalchemy import ForeignKey, create_engine, ARRAY
+
+DB_USERNAME = os.getenv("DB_USERNAME")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+HOSTNAME = os.getenv("HOSTNAME")
+# from datetime import datetime
+
 
 import uuid
 
-DB_PASSWORD = "0000"
-DB_NAME = "RPSDB"
-engine = create_engine(f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/{DB_NAME}")
+engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -38,6 +45,21 @@ class User(Base):
         }
 
 
+class Lobby(Base):
+    __tablename__ = "lobby"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))  # tb cu relationship
+    lobby_name: Mapped[str]
+    rounds: Mapped[int]
+
+    def __repr__(self):
+        return {
+            "id": str(self.id),
+            "lobby_name": str(self.lobby_name),
+            "rounds": int(self.rounds)
+        }
+
+
 class GameSession(Base):
     __tablename__ = "game_session"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -46,29 +68,16 @@ class GameSession(Base):
     player_ids = Mapped[ARRAY[uuid.UUID]]
     start_time: Mapped[str]
     end_time: Mapped[str]
+    player_ids: Mapped[str]
 
     def __repr__(self):
         return {
             "id": str(self.id),
             "lobby_id": str(self.lobby_id),
             "winner_id": str(self.winner_id),
-            "player_ids": self.player_ids,
             "start_time": str(self.start_time),
-            "end_time": str(self.end_time)
-        }
-
-
-class Lobby(Base):
-    __tablename__ = "lobby"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    lobby_name: Mapped[str]
-    rounds: Mapped[int]
-
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "lobby_name": str(self.lobby_name),
-            "rounds": str(self.rounds)
+            "end_time": str(self.end_time),
+            "player_ids": str(self.player_ids)
         }
 
 
@@ -104,3 +113,6 @@ class UserLobby(Base):
 
 Base.metadata.create_all(engine)
 session = Session(engine)
+
+# TREBUIE RECONFIGURAT DUPA ERD UL NOU
+# posibil local cache pentru history
