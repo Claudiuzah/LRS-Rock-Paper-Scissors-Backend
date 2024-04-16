@@ -1,3 +1,50 @@
+POST http://10.80.113.68:8000/register
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-12T214627.404.json
+
+###
+
+GET http://10.80.113.68:8000/online_users
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-12T214549.404.json
+
+###
+
+POST http://10.80.113.68:8000/create
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-12T214517.404.json
+
+###
+
+GET http://10.80.113.68:8000
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-12T214405.401.json
+
+###
+
+GET http://10.80.113.68:8000
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-12T214349.401.json
+
+###
+
 POST http://localhost:8000/api/authenticate
 Content-Length: 0
 Connection: Keep-Alive
