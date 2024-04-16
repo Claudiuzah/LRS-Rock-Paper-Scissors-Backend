@@ -10,6 +10,7 @@ from db.models import Lobby
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 HOST = os.getenv("HOST")
 PORT = os.getenv("PORT")
@@ -92,7 +93,7 @@ async def points(user: dict = Depends(get_current_user)):
     pass
 
 
-@lobby_router.post("/invite_to_lobby/{lobby_name}") # Not working
+@lobby_router.post("/invite_to_lobby/{lobby_name}")  # Not working
 async def invite_to_lobby(lobby_name: str, user_to_invite: str, db: db_dependency,
                           user: dict = Depends(get_current_user)):
     if user is None:
@@ -102,7 +103,6 @@ async def invite_to_lobby(lobby_name: str, user_to_invite: str, db: db_dependenc
         raise HTTPException(status_code=404, detail="Lobby not found")
 
     lobby_memberships[lobby_name].append(user_to_invite)
-    print(lobby_memberships)
     return {"message": f"User '{user_to_invite}' invited to lobby '{lobby_name}'"}
 
 
