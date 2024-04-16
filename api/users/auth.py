@@ -9,6 +9,7 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 import os
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
@@ -29,6 +30,7 @@ class CreateUserRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_data: dict
 
 
 def get_db():
@@ -60,7 +62,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
     return {"message": "User created successfully"}
 
 
-TOKEN_EXPIRATION_DAYS = 30
+TOKEN_EXPIRATION_DAYS = 5
 
 
 @router.post("/token", response_model=Token)
@@ -71,7 +73,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
                             detail="Incorrect username or password!")
     token = create_access_token(user.username, user.id, timedelta(
         days=TOKEN_EXPIRATION_DAYS))  # TODO check refresh token, token expires after a month for now
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer", "user_data": {"username": user.username, "id": user.id}}
 
 
 def authenticate_user(username: str, password: str, db):
@@ -85,6 +87,8 @@ def authenticate_user(username: str, password: str, db):
 
 def create_access_token(username: str, user_id: str, expires_delta: timedelta = timedelta()):
     encode = {'sub': username, 'id': str(user_id)}
+    expires = datetime.utcnow() + expires_delta
+    encode.update({"exp": expires})
 
     return jwt.encode(encode, SECRET_KEY)
 
