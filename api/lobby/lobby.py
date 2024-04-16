@@ -61,7 +61,7 @@ async def fetch_online_users(user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail="Failed to fetch online users")
 
 
-def invite_by_name(lobby_name: str, lobby_id: int, db: Session):
+def invite_by_lobby_name(lobby_name: str, lobby_id: int, db: db_dependency):
     lobby = get_lobby_by_lobby_name(db, lobby_name)
     if lobby:
         pass
@@ -92,8 +92,22 @@ async def points(user: dict = Depends(get_current_user)):
     pass
 
 
+@lobby_router.post("/invite_to_lobby/{lobby_name}") # Not working
+async def invite_to_lobby(lobby_name: str, user_to_invite: str, db: db_dependency,
+                          user: dict = Depends(get_current_user)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
+    lobby_memberships = db.query(Lobby).filter(Lobby.lobby_name).first()
+    if lobby_name not in lobby_memberships:
+        raise HTTPException(status_code=404, detail="Lobby not found")
+
+    lobby_memberships[lobby_name].append(user_to_invite)
+    print(lobby_memberships)
+    return {"message": f"User '{user_to_invite}' invited to lobby '{lobby_name}'"}
+
+
 @lobby_router.get("/{lobby_id}")
-async def get_lobby(user: dict = Depends(get_current_user)):
+async def get_lobby_by_id(user: dict = Depends(get_current_user)):
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     pass
