@@ -40,7 +40,7 @@ class User(Base):
             "password": str(self.hashed_password),
             "total_games": str(self.total_games),
             "total_wins": str(self.total_wins),
-            "total_points":str(self.total_points)
+            "total_points": str(self.total_points)
 
         }
 
