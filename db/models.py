@@ -42,17 +42,23 @@ class User_statistics(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     username: Mapped[str]
-    total_games: Mapped[int]
-    total_wins: Mapped[int]
-    total_points: Mapped[int]
+    total_games_multiplayer: Mapped[int]
+    total_wins_multiplayer: Mapped[int]
+    total_points_multiplayer: Mapped[int]
+    total_games_singleplayer: Mapped[int]
+    total_wins_singleplayer: Mapped[int]
+    total_points_singleplayer: Mapped[int]
 
     def __repr__(self):
         return {
             "id": str(self.id),
             "username": str(self.username),
-            "total_games": str(self.total_games),
-            "total_wins": str(self.total_wins),
-            "total_points": str(self.total_points)
+            "total_games_multiplayer": str(self.total_games_multiplayer),
+            "total_wins_multiplayer": str(self.total_wins_multiplayer),
+            "total_points_multiplayer": str(self.total_points_multiplayer),
+            "total_games_singleplayer": str(self.total_games_singleplayer),
+            "total_wins_singleplayer": str(self.total_wins_singleplayer),
+            "total_points_singleplayer": str(self.total_points_singleplayer)
 
         }
 

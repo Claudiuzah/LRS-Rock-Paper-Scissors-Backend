@@ -16,6 +16,7 @@ from starlette import status
 from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
+from api.leaderboard.leaderboard_top_10 import leaderboard_router
 
 HOST = os.getenv("HOST")
 PORT = os.getenv("PORT")
@@ -33,7 +34,7 @@ app.add_middleware(
 app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
-# app.include_router(leaderboard_router)
+app.include_router(leaderboard_router)
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
