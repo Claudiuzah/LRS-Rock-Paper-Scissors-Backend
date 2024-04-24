@@ -2,8 +2,9 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker
-from sqlalchemy import ForeignKey, create_engine, ARRAY
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker, relationship
+from sqlalchemy import ForeignKey, create_engine, ARRAY, Column, Integer
+
 
 DB_USERNAME = os.getenv("DB_USERNAME")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
@@ -29,38 +30,35 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     username: Mapped[str]
     hashed_password: Mapped[str]
+    stats = relationship("User_statistics", back_populates="user")
 
     def __repr__(self):
         return {
             "id": str(self.id),
             "username": str(self.username),
-            "password": str(self.hashed_password)
+            "password": str(self.hashed_password),
+            "stats": self.stats
         }
+
+
 
 class User_statistics(Base):
     __tablename__ = "user_stats"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    username: Mapped[str]
-    total_games_multiplayer: Mapped[int]
-    total_wins_multiplayer: Mapped[int]
-    total_points_multiplayer: Mapped[int]
-    total_games_singleplayer: Mapped[int]
-    total_wins_singleplayer: Mapped[int]
-    total_points_singleplayer: Mapped[int]
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    total_games_multiplayer = Column(Integer)
+    total_wins_multiplayer = Column(Integer)
+    total_points_multiplayer = Column(Integer)
+    total_games_singleplayer = Column(Integer)
+    total_wins_singleplayer = Column(Integer)
+    total_points_singleplayer = Column(Integer)
 
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "username": str(self.username),
-            "total_games_multiplayer": str(self.total_games_multiplayer),
-            "total_wins_multiplayer": str(self.total_wins_multiplayer),
-            "total_points_multiplayer": str(self.total_points_multiplayer),
-            "total_games_singleplayer": str(self.total_games_singleplayer),
-            "total_wins_singleplayer": str(self.total_wins_singleplayer),
-            "total_points_singleplayer": str(self.total_points_singleplayer)
+    # Relationship with User table
+    user = relationship("User", back_populates="stats")
 
-        }
+
+
 
 
 class Lobby(Base):
