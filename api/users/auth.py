@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
@@ -9,6 +9,9 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 import os
+from fastapi.responses import JSONResponse
+
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
@@ -29,6 +32,7 @@ class CreateUserRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_data: dict
 
 
 def get_db():
@@ -60,8 +64,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
     return {"message": "User created successfully"}
 
 
-TOKEN_EXPIRATION_DAYS = 30
-
+TOKEN_EXPIRATION_MINUTES = 30
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
@@ -70,8 +73,8 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect username or password!")
     token = create_access_token(user.username, user.id, timedelta(
-        days=TOKEN_EXPIRATION_DAYS))  # TODO check refresh token, token expires after a month for now
-    return {"access_token": token, "token_type": "bearer"}
+        minutes=TOKEN_EXPIRATION_MINUTES))  # TODO check refresh token, token expires after a month for now
+    return {"access_token": token, "token_type": "bearer", "user_data": {"username": user.username, "id": user.id}}
 
 
 def authenticate_user(username: str, password: str, db):
@@ -85,6 +88,8 @@ def authenticate_user(username: str, password: str, db):
 
 def create_access_token(username: str, user_id: str, expires_delta: timedelta = timedelta()):
     encode = {'sub': username, 'id': str(user_id)}
+    expires = datetime.utcnow() + expires_delta
+    encode.update({"exp": expires})
 
     return jwt.encode(encode, SECRET_KEY)
 
@@ -99,6 +104,19 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         return {"username": username, "id": user_id}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user.")
+
+@router.get("/online_users")
+async def get_online_users(request: Request):
+
+    online_user = request.session.get("online_user")
+    if online_user:
+        return JSONResponse(content={"online_user": online_user})
+    else:
+        return JSONResponse(content={"online_user": None})
+@router.post("/logout")
+async def logout(request: Request):
+    request.session.pop("online_user", None)
+    return {"message": "Logout successful"}
 
 
 user_router = APIRouter(
