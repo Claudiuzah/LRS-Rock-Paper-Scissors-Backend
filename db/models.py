@@ -5,7 +5,6 @@ load_dotenv()
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker, relationship
 from sqlalchemy import ForeignKey, create_engine, ARRAY, Column, Integer
 
-
 DB_USERNAME = os.getenv("DB_USERNAME")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
@@ -30,23 +29,19 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     username: Mapped[str]
     hashed_password: Mapped[str]
-    stats = relationship("User_statistics", back_populates="user")
 
     def __repr__(self):
         return {
             "id": str(self.id),
             "username": str(self.username),
-            "password": str(self.hashed_password),
-            "stats": self.stats
+            "password": str(self.hashed_password)
         }
-
 
 
 class User_statistics(Base):
     __tablename__ = "user_stats"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
     total_games_multiplayer = Column(Integer)
     total_wins_multiplayer = Column(Integer)
     total_points_multiplayer = Column(Integer)
@@ -54,17 +49,12 @@ class User_statistics(Base):
     total_wins_singleplayer = Column(Integer)
     total_points_singleplayer = Column(Integer)
 
-    # Relationship with User table
-    user = relationship("User", back_populates="stats")
-
-
-
 
 
 class Lobby(Base):
     __tablename__ = "lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))  # tb cu relationship
+    # user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))  # tb cu relationship
     lobby_name: Mapped[str]
     rounds: Mapped[int]
 

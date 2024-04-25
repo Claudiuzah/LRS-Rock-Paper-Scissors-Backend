@@ -59,7 +59,8 @@ async def read_root(user: dict = Depends(get_current_user)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=HOST, port=int(PORT))
+    uvicorn.run(app="main:app", host="0.0.0.0", port=int(PORT), reload=True)
+    # uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True)
     # 172.16.1.89
     # pip freeze > requirements.txt
     # pip install -r requirements.txt  For installing requirements

@@ -48,7 +48,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, create_user_request: CreateUserRequest):
-    existing_user = db.query(User).filter(User.username == create_user_request.username).first()
+    existing_user = db.query(User).filter_by(username=create_user_request.username).first()
+    # existing_user = db.query(User).filter(User.username == create_user_request.username).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username already exists")
 

@@ -11,23 +11,23 @@ from dependencies import get_current_user
 user_router = APIRouter(prefix="/api/user", tags=["user"])
 
 
-@user_router.put("/putstats", status_code=status.HTTP_200_OK)
-async def put_user_profile_stats(user_data: UpdateUserProfileStats, user_id: str,
-                                 db: Session = Depends(get_db),
-                                 user: dict = Depends(get_current_user)):
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
-    db_user = db.query(User).filter(User.id == user_id).first()
-    if db_user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    db_user.stats.total_games_multiplayer = user_data.total_games_multiplayer
-    db_user.stats.total_wins_multiplayer = user_data.total_wins_multiplayer
-    db_user.stats.total_points_multiplayer = user_data.total_points_multiplayer
-    db_user.stats.total_games_singleplayer = user_data.total_games_singleplayer
-    db_user.stats.total_wins_singleplayer = user_data.total_wins_singleplayer
-    db_user.stats.total_points_singleplayer = user_data.total_points_singleplayer
-    db.commit()
-    return {"message": "User updated successfully"}
+# @user_router.put("/putstats", status_code=status.HTTP_200_OK)
+# async def put_user_profile_stats(user_data: UpdateUserProfileStats, user_id: str,
+#                                  db: Session = Depends(get_db),
+#                                  user: dict = Depends(get_current_user)):
+#     if user is None:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
+#     db_user = db.query(User).filter(User.id == user_id).first()
+#     if db_user is None:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+#     db_user.stats.total_games_multiplayer = user_data.total_games_multiplayer
+#     db_user.stats.total_wins_multiplayer = user_data.total_wins_multiplayer
+#     db_user.stats.total_points_multiplayer = user_data.total_points_multiplayer
+#     db_user.stats.total_games_singleplayer = user_data.total_games_singleplayer
+#     db_user.stats.total_wins_singleplayer = user_data.total_wins_singleplayer
+#     db_user.stats.total_points_singleplayer = user_data.total_points_singleplayer
+#     db.commit()
+#     return {"message": "User updated successfully"}
 
 
 @user_router.get("/{user_id}", response_model=UserProfileStatistics, status_code=status.HTTP_200_OK)
