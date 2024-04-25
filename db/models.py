@@ -49,6 +49,16 @@ class User_statistics(Base):
     total_wins_singleplayer = Column(Integer)
     total_points_singleplayer = Column(Integer)
 
+    # def __repr__(self):
+    #     return {
+    #         "id": str(self.id),
+    #         "total_games_multiplayer": str(self.total_games_multiplayer),
+    #         "total_wins_multiplayer": str(self.total_wins_multiplayer),
+    #         "total_points_multiplayer": str(self.total_points_multiplayer),
+    #         "total_games_singleplayer": str(self.total_games_singleplayer),
+    #         "total_wins_singleplayer": str(self.total_wins_singleplayer),
+    #         "total_points_singleplayer": str(self.total_points_singleplayer)}
+
 
 
 class Lobby(Base):
