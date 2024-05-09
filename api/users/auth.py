@@ -105,6 +105,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user.")
 
+
 @router.get("/online_users")
 async def get_online_users(request: Request):
 
@@ -113,10 +114,11 @@ async def get_online_users(request: Request):
         return JSONResponse(content={"online_user": online_user})
     else:
         return JSONResponse(content={"online_user": None})
-@router.post("/logout")
-async def logout(request: Request):
-    request.session.pop("online_user", None)
-    return {"message": "Logout successful"}
+
+# @router.post("/logout")
+# async def logout(request: Request):
+#     request.session.pop("online_user", None)
+#     return {"message": "Logout successful"}
 
 
 user_router = APIRouter(
