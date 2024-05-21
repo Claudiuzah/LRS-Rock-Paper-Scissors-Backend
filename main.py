@@ -52,8 +52,10 @@ async def websocket_endpoint(websocket: WebSocket, access_token: str):
     try:
         while True:
             message = await websocket.receive_text()
+            print(f"Message received from client {access_token}: {message}")
     except WebSocketDisconnect as e:
         await manager.disconnect(access_token)
+        print(f"WebSocket connection closed for: {access_token}")
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
