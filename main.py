@@ -10,11 +10,10 @@ from dotenv import load_dotenv
 from api.lobby.lobby import lobby_router
 from api.users.auth import router, get_current_user
 from api.users.user import user_router
+from api.leaderboard.leaderboard_top_10 import leaderboard_router
 from db.models import SessionLocal
 from starlette import status
 from fastapi.security import OAuth2PasswordBearer
-from api.leaderboard.leaderboard_top_10 import leaderboard_router
-
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from websocket_manager.ws import ConnectionManager
 
@@ -39,7 +38,6 @@ app.add_middleware(
 app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
-
 app.include_router(leaderboard_router)
 
 manager = ConnectionManager()
@@ -80,10 +78,4 @@ async def read_root(user: dict = Depends(get_current_user)):
 
 
 if __name__ == "__main__":
-    #     uvicorn.run(app="main:app", host=HOST, port=int(PORT), reload=True)
-    #     # uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True)
-    #     # pip freeze > requirements.txt
-    #     # pip install -r requirements.txt  For installing requirements
-    import uvicorn
-
     uvicorn.run(app, host=HOST, port=int(PORT))

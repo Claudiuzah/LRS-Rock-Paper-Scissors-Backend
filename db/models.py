@@ -1,18 +1,16 @@
-import os
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import create_engine, ForeignKey, ARRAY, Column, Integer, String
+from sqlalchemy.orm import relationship, sessionmaker, Session
 from dotenv import load_dotenv
+import os
+import uuid
 
 load_dotenv()
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker, relationship
-from sqlalchemy import ForeignKey, create_engine, ARRAY, Column, Integer
 
 DB_USERNAME = os.getenv("DB_USERNAME")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 HOSTNAME = os.getenv("HOSTNAME")
-# from datetime import datetime
-
-
-import uuid
 
 engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 
@@ -25,55 +23,27 @@ class Base(DeclarativeBase):
 
 class User(Base):
     __tablename__ = "user"
-
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    username: Mapped[str]
-    hashed_password: Mapped[str]
-
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "username": str(self.username),
-            "password": str(self.hashed_password)
-        }
+    username: Mapped[str] = mapped_column(String, unique=True)
+    hashed_password: Mapped[str] = mapped_column(String)
 
 
 class User_statistics(Base):
     __tablename__ = "user_stats"
-
-    id = Column(Integer, primary_key=True, index=True)
-    total_games_multiplayer = Column(Integer)
-    total_wins_multiplayer = Column(Integer)
-    total_points_multiplayer = Column(Integer)
-    total_games_singleplayer = Column(Integer)
-    total_wins_singleplayer = Column(Integer)
-    total_points_singleplayer = Column(Integer)
-
-    # def __repr__(self):
-    #     return {
-    #         "id": str(self.id),
-    #         "total_games_multiplayer": str(self.total_games_multiplayer),
-    #         "total_wins_multiplayer": str(self.total_wins_multiplayer),
-    #         "total_points_multiplayer": str(self.total_points_multiplayer),
-    #         "total_games_singleplayer": str(self.total_games_singleplayer),
-    #         "total_wins_singleplayer": str(self.total_wins_singleplayer),
-    #         "total_points_singleplayer": str(self.total_points_singleplayer)}
-
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    total_games_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_wins_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_points_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_games_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_wins_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_points_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class Lobby(Base):
     __tablename__ = "lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    # user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))  # tb cu relationship
-    lobby_name: Mapped[str]
-    rounds: Mapped[int]
-
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "lobby_name": str(self.lobby_name),
-            "rounds": int(self.rounds)
-        }
+    lobby_name: Mapped[str] = mapped_column(String, unique=True)
+    rounds: Mapped[int] = mapped_column(Integer, default=1)
 
 
 class GameSession(Base):
@@ -81,20 +51,9 @@ class GameSession(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     lobby_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("lobby.id"))
     winner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
-    player_ids = Mapped[ARRAY[uuid.UUID]]
-    start_time: Mapped[str]
-    end_time: Mapped[str]
-    player_ids: Mapped[str]
-
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "lobby_id": str(self.lobby_id),
-            "winner_id": str(self.winner_id),
-            "start_time": str(self.start_time),
-            "end_time": str(self.end_time),
-            "player_ids": str(self.player_ids)
-        }
+    player_ids = Column(ARRAY(String))
+    start_time: Mapped[str] = mapped_column(String)
+    end_time: Mapped[str] = mapped_column(String)
 
 
 class Move(Base):
@@ -102,15 +61,7 @@ class Move(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     session_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("game_session.id"))
     player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
-    choice: Mapped[str] = mapped_column()
-
-    def __repr__(self):
-        return {
-            "id": str(self.id),
-            "session_id": str(self.session_id),
-            "player_id": str(self.player_id),
-            "choice": str(self)
-        }
+    choice: Mapped[str] = mapped_column(String)
 
 
 class History(Base):
@@ -129,6 +80,3 @@ class UserLobby(Base):
 
 Base.metadata.create_all(engine)
 session = Session(engine)
-
-# TREBUIE RECONFIGURAT DUPA ERD UL NOU
-# posibil local cache pentru history
