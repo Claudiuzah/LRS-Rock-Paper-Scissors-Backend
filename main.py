@@ -81,9 +81,5 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
 
 if __name__ == "__main__":
     import uvicorn
-    import os
 
-    HOST = os.getenv("HOST", "127.0.0.1")
-    PORT = int(os.getenv("PORT", 8000))
-
-    uvicorn.run(app, host=HOST, port=PORT)
+    uvicorn.run(app, host=HOST, port=int(PORT))
