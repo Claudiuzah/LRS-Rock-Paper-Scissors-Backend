@@ -50,5 +50,5 @@ class ConnectionManager(metaclass=SingletonMeta):
                 raise WebSocketDisconnect(code=1008, reason="Expired or invalid access token")
 
 
-async def disconnect(self, access_token=None):
-    self.active_connections.pop(access_token)
+    async def disconnect(self, access_token=None):
+        self.active_connections.pop(access_token)

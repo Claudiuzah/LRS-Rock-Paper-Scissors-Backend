@@ -15,6 +15,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from websocket_manager.ws import ConnectionManager
+from websocket_manager.Lobbyws import Lobbyws
 
 load_dotenv()
 
@@ -37,18 +38,23 @@ app.include_router(router)
 app.include_router(user_router)
 
 manager = ConnectionManager()
+lobby_manager = Lobbyws()
 
 
 @app.websocket("/ws/{access_token}")
 async def websocket_endpoint(websocket: WebSocket, access_token: str):
-    await manager.connect(websocket, access_token=access_token)
+    lobby_id = lobby_manager.create_lobby()
+    # await manager.connect(websocket, access_token=access_token)
+    await lobby_manager.connect_to_lobby(websocket, lobby_id, access_token)
 
     try:
         while True:
             message = await websocket.receive_text()
-            print(f"Message received from client {access_token}: {message}")
+            print(f"Message received from client {access_token} in lobby {lobby_id}: {message}")
+            await lobby_manager.broadcast_to_lobby(lobby_id, message)
     except WebSocketDisconnect as e:
         await manager.disconnect(access_token)
+        await lobby_manager.close_lobby(lobby_id)
         print(f"WebSocket connection closed for: {access_token}")
 
 
@@ -75,5 +81,9 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
 
 if __name__ == "__main__":
     import uvicorn
+    import os
 
-    uvicorn.run(app, host=HOST, port=int(PORT))
+    HOST = os.getenv("HOST", "127.0.0.1")
+    PORT = int(os.getenv("PORT", 8000))
+
+    uvicorn.run(app, host=HOST, port=PORT)

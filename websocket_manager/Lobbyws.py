@@ -1,11 +1,17 @@
 from typing import Dict
+from uuid import uuid4
+
+# from db.models import Lobby
 from websocket_manager.ws import ConnectionManager
 
+
+# from api.lobby.utils import db_dependency
 
 
 class Lobbyws:
     def __init__(self):
         self.lobbies: Dict[str, dict] = {}
+        # self.lobbies: db.query(Lobby).filter(Lobby.id).first()
         self.manager = ConnectionManager()
 
     async def connect_to_lobby(self, websocket, lobby_id, access_token):
@@ -20,7 +26,8 @@ class Lobbyws:
             players = self.lobbies[lobby_id]["players"]
             for ws in players:
                 try:
-                    access_token = next((token for token, socket in self.manager.active_connections.items() if socket == ws), None)
+                    access_token = next(
+                        (token for token, socket in self.manager.active_connections.items() if socket == ws), None)
                     if access_token:
                         await self.manager.disconnect(access_token)
                 except Exception as e:
@@ -32,10 +39,8 @@ class Lobbyws:
             for ws in self.lobbies[lobby_id]["players"]:
                 await ws.send_text(message)
 
-    def get_first_available_lobby(self):
-        for lobby_id, lobby_data in self.lobbies.items():
-            return lobby_id
-        lobby_id = generate_lobby_id()
+    def create_lobby(self):
+        lobby_id = str(uuid4())
         self.lobbies[lobby_id] = {"players": [], "moves": {}}
         return lobby_id
 
@@ -54,7 +59,6 @@ class Lobbyws:
         return None, "Waiting for other players"
 
     def determine_winner(self, moves: Dict[str, str]):
-        # Rock-paper-scissors logic
         beats = {
             'rock': 'scissors',
             'scissors': 'paper',
@@ -77,12 +81,8 @@ class Lobbyws:
 
         return None, "No clear winner!"
 
-    def is_lobby_full(self, lobby_id, max_players=4):
+    def is_lobby_full(self, lobby_id, max_players=6):
         if lobby_id in self.lobbies:
             return len(self.lobbies[lobby_id]["players"]) >= max_players
         else:
             return False
-
-# def generate_lobby_id(length=6):
-#     characters = string.ascii_letters + string.digits                     TODO: change this to UUID generated idDB
-#     return ''.join(random.choice(characters) for _ in range(length))
