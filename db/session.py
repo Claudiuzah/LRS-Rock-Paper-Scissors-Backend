@@ -1,5 +1,8 @@
+import uuid
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped
+from sqlalchemy.testing.schema import mapped_column
 
 DB_PASSWORD = "0000"
 DB_NAME = "RPSDB"
