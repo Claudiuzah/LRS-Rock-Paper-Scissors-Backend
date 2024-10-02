@@ -44,7 +44,7 @@ lobby_manager = Lobbyws()
 @app.websocket("/ws/{access_token}")
 async def websocket_endpoint(websocket: WebSocket, access_token: str):
     lobby_id = lobby_manager.get_first_available_lobby()
-    await lobby_manager.connect_to_lobby(websocket, access_token)
+    await lobby_manager.connect_to_lobby(websocket, lobby_id, access_token)
 
     try:
         while True:

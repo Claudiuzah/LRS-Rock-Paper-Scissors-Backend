@@ -1,16 +1,17 @@
 from typing import Dict
 from uuid import uuid4
-from websocket_manager.ws import ConnectionManager
 
+# from db.models import Lobby
+from websocket_manager.ws import ConnectionManager
 
 class Lobbyws:
     def __init__(self):
         self.lobbies: Dict[str, dict] = {}
         self.manager = ConnectionManager()
 
-    async def connect_to_lobby(self, websocket, access_token):
-        # Get an available lobby for the player
-        lobby_id = self.get_first_available_lobby()
+    async def connect_to_lobby(self, websocket, lobby_id, access_token):
+        if lobby_id not in self.lobbies:
+            self.lobbies[lobby_id] = {"players": [], "moves": {}}
 
         # Handle multiple connections for the same user
         if access_token in self.manager.active_connections:
@@ -20,6 +21,9 @@ class Lobbyws:
 
         # Ensure websocket connection is accepted
         await self.manager.connect(websocket, access_token=access_token)
+
+        # Broadcast player update to the lobby
+        await self.broadcast_player_update(lobby_id)
 
         print(f"Player {access_token} connected to lobby {lobby_id}")
 
@@ -40,17 +44,25 @@ class Lobbyws:
                 await self.manager.disconnect(access_token)
                 print(f"Player {access_token} disconnected from lobby {lobby_id}")
 
+                # Broadcast player update to the lobby
+                await self.broadcast_player_update(lobby_id)
+
             # If the lobby is now empty, close it
             if len(players) == 0:
                 await self.close_lobby(lobby_id)
 
+    async def broadcast_player_update(self, lobby_id):
+        if lobby_id in self.lobbies:
+            players = [player["token"] for player in self.lobbies[lobby_id]["players"]]
+            message = {"type": "playerUpdate", "players": players}
+            for player in self.lobbies[lobby_id]["players"]:
+                await player["socket"].send_json(message)
+
     def get_first_available_lobby(self):
-        # Look for existing lobbies with less than 2 players
         for lobby_id, lobby_data in self.lobbies.items():
-            if len(lobby_data["players"]) < 2:  # Adjust this number as needed
+            if len(lobby_data["players"]) < 2:
                 return lobby_id
 
-        # If no existing lobby is found, create a new one
         lobby_id = str(uuid4())
         self.lobbies[lobby_id] = {"players": [], "moves": {}}
         return lobby_id
