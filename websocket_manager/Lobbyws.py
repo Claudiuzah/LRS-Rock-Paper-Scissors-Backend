@@ -1,11 +1,6 @@
 from typing import Dict
 from uuid import uuid4
-
-# from db.models import Lobby
 from websocket_manager.ws import ConnectionManager
-
-
-# from api.lobby.utils import db_dependency
 
 
 class Lobbyws:
@@ -13,16 +8,9 @@ class Lobbyws:
         self.lobbies: Dict[str, dict] = {}
         self.manager = ConnectionManager()
 
-    # async def connect_to_lobby(self, websocket, lobby_id, access_token):
-    #     if lobby_id not in self.lobbies:
-    #         self.lobbies[lobby_id] = {"players": [], "moves": {}}
-    #     self.lobbies[lobby_id]["players"].append(websocket)
-    #     await self.manager.connect(websocket, access_token=access_token)
-    #     print(f"Player {access_token} connected to lobby {lobby_id}")
-
-    async def connect_to_lobby(self, websocket, lobby_id, access_token):
-        if lobby_id not in self.lobbies:
-            self.lobbies[lobby_id] = {"players": [], "moves": {}}
+    async def connect_to_lobby(self, websocket, access_token):
+        # Get an available lobby for the player
+        lobby_id = self.get_first_available_lobby()
 
         # Handle multiple connections for the same user
         if access_token in self.manager.active_connections:
@@ -57,10 +45,12 @@ class Lobbyws:
                 await self.close_lobby(lobby_id)
 
     def get_first_available_lobby(self):
+        # Look for existing lobbies with less than 2 players
         for lobby_id, lobby_data in self.lobbies.items():
-            if len(lobby_data["players"]) < 2:
+            if len(lobby_data["players"]) < 2:  # Adjust this number as needed
                 return lobby_id
 
+        # If no existing lobby is found, create a new one
         lobby_id = str(uuid4())
         self.lobbies[lobby_id] = {"players": [], "moves": {}}
         return lobby_id
@@ -71,7 +61,7 @@ class Lobbyws:
             for ws in players:
                 try:
                     access_token = next(
-                        (token for token, socket in self.manager.active_connections.items() if socket == ws), None)
+                        (token for token, socket in self.manager.active_connections.items() if socket == ws["socket"]), None)
                     if access_token:
                         await self.manager.disconnect(access_token)
                 except Exception as e:
@@ -80,8 +70,8 @@ class Lobbyws:
 
     async def broadcast_to_lobby(self, lobby_id: str, message: str):
         if lobby_id in self.lobbies:
-            for ws in self.lobbies[lobby_id]["players"]:
-                await ws.send_text(message)
+            for player in self.lobbies[lobby_id]["players"]:
+                await player["socket"].send_text(message)
 
     def create_lobby(self):
         lobby_id = str(uuid4())
