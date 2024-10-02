@@ -11,7 +11,6 @@ from websocket_manager.ws import ConnectionManager
 class Lobbyws:
     def __init__(self):
         self.lobbies: Dict[str, dict] = {}
-        # self.lobbies: db.query(Lobby).filter(Lobby.id).first()
         self.manager = ConnectionManager()
 
     # async def connect_to_lobby(self, websocket, lobby_id, access_token):
@@ -29,12 +28,33 @@ class Lobbyws:
         if access_token in self.manager.active_connections:
             await self.manager.disconnect(access_token)  # Optionally disconnect the existing one
 
-        self.lobbies[lobby_id]["players"].append(websocket)
+        self.lobbies[lobby_id]["players"].append({"socket": websocket, "token": access_token})
 
         # Ensure websocket connection is accepted
         await self.manager.connect(websocket, access_token=access_token)
 
         print(f"Player {access_token} connected to lobby {lobby_id}")
+
+    async def handle_disconnection(self, websocket, access_token: str, lobby_id: str):
+        if lobby_id in self.lobbies:
+            players = self.lobbies[lobby_id]["players"]
+            player_to_remove = None
+
+            # Find the player in the lobby based on their access token
+            for player in players:
+                if player["token"] == access_token:
+                    player_to_remove = player
+                    break
+
+            # If the player was found, remove them from the lobby
+            if player_to_remove:
+                players.remove(player_to_remove)
+                await self.manager.disconnect(access_token)
+                print(f"Player {access_token} disconnected from lobby {lobby_id}")
+
+            # If the lobby is now empty, close it
+            if len(players) == 0:
+                await self.close_lobby(lobby_id)
 
     def get_first_available_lobby(self):
         for lobby_id, lobby_data in self.lobbies.items():

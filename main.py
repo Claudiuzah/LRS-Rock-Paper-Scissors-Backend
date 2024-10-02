@@ -44,17 +44,16 @@ lobby_manager = Lobbyws()
 @app.websocket("/ws/{access_token}")
 async def websocket_endpoint(websocket: WebSocket, access_token: str):
     lobby_id = lobby_manager.get_first_available_lobby()
-    # await manager.connect(websocket, access_token=access_token)
     await lobby_manager.connect_to_lobby(websocket, lobby_id, access_token)
 
     try:
         while True:
             message = await websocket.receive_text()
             print(f"Message received from client {access_token} in lobby {lobby_id}: {message}")
-            await lobby_manager.broadcast_to_lobby(lobby_id, message)
+            # await lobby_manager.broadcast_to_lobby(lobby_id, message)
     except WebSocketDisconnect as e:
-        await manager.disconnect(access_token)
-        await lobby_manager.close_lobby(lobby_id)
+        # Handle player disconnection
+        await lobby_manager.handle_disconnection(websocket, access_token, lobby_id)
         print(f"WebSocket connection closed for: {access_token}")
 
 
