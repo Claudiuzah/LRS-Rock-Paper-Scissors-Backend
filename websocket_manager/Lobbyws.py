@@ -14,12 +14,36 @@ class Lobbyws:
         # self.lobbies: db.query(Lobby).filter(Lobby.id).first()
         self.manager = ConnectionManager()
 
+    # async def connect_to_lobby(self, websocket, lobby_id, access_token):
+    #     if lobby_id not in self.lobbies:
+    #         self.lobbies[lobby_id] = {"players": [], "moves": {}}
+    #     self.lobbies[lobby_id]["players"].append(websocket)
+    #     await self.manager.connect(websocket, access_token=access_token)
+    #     print(f"Player {access_token} connected to lobby {lobby_id}")
+
     async def connect_to_lobby(self, websocket, lobby_id, access_token):
         if lobby_id not in self.lobbies:
             self.lobbies[lobby_id] = {"players": [], "moves": {}}
+
+        # Handle multiple connections for the same user
+        if access_token in self.manager.active_connections:
+            await self.manager.disconnect(access_token)  # Optionally disconnect the existing one
+
         self.lobbies[lobby_id]["players"].append(websocket)
+
+        # Ensure websocket connection is accepted
         await self.manager.connect(websocket, access_token=access_token)
+
         print(f"Player {access_token} connected to lobby {lobby_id}")
+
+    def get_first_available_lobby(self):
+        for lobby_id, lobby_data in self.lobbies.items():
+            if len(lobby_data["players"]) < 2:
+                return lobby_id
+
+        lobby_id = str(uuid4())
+        self.lobbies[lobby_id] = {"players": [], "moves": {}}
+        return lobby_id
 
     async def close_lobby(self, lobby_id):
         if lobby_id in self.lobbies:
