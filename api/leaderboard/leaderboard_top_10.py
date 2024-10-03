@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette import status
-from db.models import User, User_statistics
+#from db.models import User, User_statistics
+from db.models import User_statistics, User
 from api.users.utils import get_db
 from api.leaderboard.models import LeaderboardResponse
 

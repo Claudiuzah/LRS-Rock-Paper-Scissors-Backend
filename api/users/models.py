@@ -16,6 +16,7 @@ class UserProfileStatistics(BaseModel):
     loss_percentage_singleplayer: float
 
 
+
 class UpdateUserProfileStats(BaseModel):
     username: str
     total_games_multiplayer: int
@@ -24,6 +25,7 @@ class UpdateUserProfileStats(BaseModel):
     total_games_singleplayer: int
     total_wins_singleplayer: int
     total_points_singleplayer: int
+
 
 
 class PlayerMove(BaseModel):

@@ -39,6 +39,7 @@ class User_statistics(Base):
     total_points_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
 
 
+
 class Lobby(Base):
     __tablename__ = "lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
