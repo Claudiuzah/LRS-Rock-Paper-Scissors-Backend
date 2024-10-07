@@ -60,7 +60,7 @@ class Lobbyws:
 
     def get_first_available_lobby(self):
         for lobby_id, lobby_data in self.lobbies.items():
-            if len(lobby_data["players"]) < 2:
+            if len(lobby_data["players"]) < 6:
                 return lobby_id
 
         lobby_id = str(uuid4())
