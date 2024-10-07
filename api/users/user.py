@@ -1,12 +1,64 @@
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from starlette import status
-from db.models import User, GameSession, Move, User_statistics
+from db.models import User, GameSession, Move, User_statistics, SessionLocal
 from api.users.utils import get_db
-from api.users.models import UserProfileStatistics, GameResult, PlayerMove, UserStatsResponse, UpdateUserProfileStats
+from typing import Annotated
+from api.users.models import UserProfileStatistics, GameResult, UserStatsResponse, UpdateUserProfileStats, UpdateUserStats
 from dependencies import get_current_user
 
 user_router = APIRouter(prefix="/api/user", tags=["user"])
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+db_dependency = Annotated[Session, Depends(get_db)]
+
+
+#TODO in doing
+@user_router.put("/update_stats", status_code=status.HTTP_200_OK)
+async def update_user_stats(
+    stats_update: UpdateUserStats,
+    db: db_dependency,
+    user: dict = Depends(get_current_user)
+):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
+
+    user_id = user["id"]
+    # db_user_stats = db.query(User_statistics).filter(User_statistics.id == user_id).first()
+
+    # if not db_user_stats:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User statistics not found")
+
+
+    # db_user_stats.total_wins_multiplayer = stats_update.total_wins_multiplayer
+    # db_user_stats.total_games_multiplayer = stats_update.total_games_multiplayer
+    # db_user_stats.total_points_multiplayer = stats_update.total_points_multiplayer
+    # db_user_stats.total_wins_singleplayer = stats_update.total_wins_singleplayer
+    # db_user_stats.total_games_singleplayer = stats_update.total_games_singleplayer
+    # db_user_stats.total_points_singleplayer = stats_update.total_points_singleplayer
+
+    user_stats = User_statistics(id=user_id,
+                                 total_wins_multiplayer=0,
+                                 total_games_multiplayer=0,
+                                 total_points_multiplayer=0,
+                                 total_wins_singleplayer=0,
+                                 total_games_singleplayer=0,
+                                 total_points_singleplayer=0)
+
+    db.add(user_stats)
+
+    db.commit()
+
+    return {"message": "User stats updated successfully"}
+
 
 # STATS PUT
 # @user_router.put("/putstats", status_code=status.HTTP_200_OK)
@@ -27,7 +79,49 @@ user_router = APIRouter(prefix="/api/user", tags=["user"])
 #     db.commit()
 #     return {"message": "User updated successfully"}
 
-
+# @user_router.put("/stats/{user_id}")
+# async def update_user_stats(
+#         stats_data: UpdateStatsRequest,
+#         user_id: str = Path(..., description="The ID of the user whose stats will be updated"),
+#         db: Session = Depends(get_db)
+# ):
+#     # Retrieve the user from the database
+#     user = db.query(User).filter_by(id=user_id).first()
+#
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#
+#     # Validate that total_games is not less than win_games
+#     if stats_data.total_games < stats_data.win_games:
+#         raise HTTPException(
+#             status_code=400,
+#             detail="Total games cannot be less than win games."
+#         )
+#
+#     # Update the user's stats
+#     user.total_games = stats_data.total_games
+#     user.win_games = stats_data.win_games
+#     user.win_percentage = (stats_data.win_games / stats_data.total_games) * 100 if stats_data.total_games > 0 else 0
+#
+#     try:
+#         # Commit the changes to the database
+#         db.commit()
+#         # Refresh the instance with the updated data
+#         db.refresh(user)
+#     except Exception as e:
+#         # Rollback the transaction if there is an error
+#         db.rollback()
+#         raise HTTPException(status_code=500, detail=f"An error occurred while updating user stats: {str(e)}")
+#
+#     return {
+#         "message": "User stats updated successfully",
+#         "data": {
+#             "total_games": user.total_games,
+#             "win_games": user.win_games,
+#             "win_percentage": user.win_percentage
+#         }
+#     }
+#_______________
 
 @user_router.get("/{user_id}", response_model=UserProfileStatistics, status_code=status.HTTP_200_OK)
 async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends(get_db),

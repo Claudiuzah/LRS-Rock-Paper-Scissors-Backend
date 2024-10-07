@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import create_engine, ForeignKey, ARRAY, Column, Integer, String
-from sqlalchemy.orm import relationship, sessionmaker, Session
+from sqlalchemy.orm import relationship, sessionmaker, Session, declarative_base
 from dotenv import load_dotenv
 import os
 import uuid
@@ -12,13 +12,13 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 HOSTNAME = os.getenv("HOSTNAME")
 
+# engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 
 class User(Base):
@@ -27,7 +27,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String, unique=True)
     hashed_password: Mapped[str] = mapped_column(String)
 
-
+#TODO in doing
 class User_statistics(Base):
     __tablename__ = "user_stats"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -38,6 +38,16 @@ class User_statistics(Base):
     total_wins_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
     total_points_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
 
+
+# class User_statistics(Base):
+#     __tablename__ = "user_stats"
+#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+#     total_games_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+#     total_wins_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+#     total_points_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+#     total_games_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
+#     total_wins_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
+#     total_points_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class Lobby(Base):
@@ -81,3 +91,4 @@ class UserLobby(Base):
 
 Base.metadata.create_all(engine)
 session = Session(engine)
+

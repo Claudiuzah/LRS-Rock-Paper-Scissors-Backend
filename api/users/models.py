@@ -2,6 +2,15 @@ from pydantic import BaseModel
 from typing import List
 
 
+class UpdateUserStats(BaseModel):
+    total_wins_multiplayer: int
+    total_games_multiplayer: int
+    total_points_multiplayer: int
+    total_wins_singleplayer: int
+    total_games_singleplayer: int
+    total_points_singleplayer: int
+
+
 class UserProfileStatistics(BaseModel):
     username: str
     total_games_multiplayer: int
@@ -25,6 +34,7 @@ class UpdateUserProfileStats(BaseModel):
     total_games_singleplayer: int
     total_wins_singleplayer: int
     total_points_singleplayer: int
+
 
 
 
