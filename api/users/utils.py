@@ -1,9 +1,6 @@
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
-# from db.models import User, GameSession
 from db.session import SessionLocal
-
-# from api.users.models import UserProfileStatistics
 
 user_router = APIRouter(prefix="/api/user", tags=["user"])
 
