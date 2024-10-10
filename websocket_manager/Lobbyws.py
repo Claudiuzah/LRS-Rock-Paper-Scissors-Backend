@@ -60,7 +60,7 @@ class Lobbyws:
 
     def get_first_available_lobby(self):
         for lobby_id, lobby_data in self.lobbies.items():
-            if len(lobby_data["players"]) < 6:
+            if len(lobby_data["players"]) < 4:
                 return lobby_id
 
         lobby_id = str(uuid4())
@@ -127,7 +127,7 @@ class Lobbyws:
 
         return None, "No clear winner!"
 
-    def is_lobby_full(self, lobby_id, max_players=6):
+    def is_lobby_full(self, lobby_id, max_players=4):
         if lobby_id in self.lobbies:
             return len(self.lobbies[lobby_id]["players"]) >= max_players
         else:
