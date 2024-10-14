@@ -1,4 +1,4 @@
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import create_engine, ForeignKey, ARRAY, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from dotenv import load_dotenv
@@ -20,7 +20,7 @@ Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     username: Mapped[str] = mapped_column(String, unique=True)
     hashed_password: Mapped[str] = mapped_column(String)
@@ -49,7 +49,7 @@ class GameSession(Base):
     __tablename__ = "game_session"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     lobby_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("lobby.id"))
-    winner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    winner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     player_ids = Column(ARRAY(String))
     start_time: Mapped[str] = mapped_column(String)
     end_time: Mapped[str] = mapped_column(String)
@@ -59,21 +59,21 @@ class Move(Base):
     __tablename__ = "move"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     session_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("game_session.id"))
-    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     choice: Mapped[str] = mapped_column(String)
 
 
 class History(Base):
     __tablename__ = "history"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
-    opponent_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    opponent_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
 
 
 class UserLobby(Base):
     __tablename__ = "user_lobby"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     lobby_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("lobby.id"))
 
 

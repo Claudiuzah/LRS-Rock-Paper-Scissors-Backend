@@ -1,25 +1,29 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from starlette import status
-#from db.models import User, User_statistics
-from db.models import User_statistics, User
+from sqlalchemy import desc
+from db.models import User, User_statistics
 from api.users.utils import get_db
-from api.leaderboard.models import LeaderboardResponse
+from starlette import status
 
-leaderboard_router = APIRouter(prefix="/api/leaderboard", tags=["leaderboard"])
+user_stats_router = APIRouter(prefix="/api/user_stats", tags=["user_stats"])
 
 
-@leaderboard_router.get("/", response_model=LeaderboardResponse, status_code=status.HTTP_200_OK)
-async def get_leaderboard(db: Session = Depends(get_db)):
-    top_players_by_wins = db.query(User_statistics).order_by(User_statistics.total_wins_multiplayer.desc()).limit(10).all()
-    top_players_by_points = db.query(User_statistics).order_by(User_statistics.total_points_multiplayer.desc()).limit(10).all()
+@user_stats_router.get("/username_wins", response_model=list[dict], status_code=status.HTTP_200_OK)
+async def get_usernames_and_wins(db: Session = Depends(get_db)):
+    try:
+        user_wins = (
+            db.query(User.username, User_statistics.total_wins_multiplayer)
+            .join(User_statistics, User.id == User_statistics.id)
+            .order_by(desc(User_statistics.total_wins_multiplayer))
+            .limit(10)
+            .all()
+        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    leaderboard_by_wins = [{"username": user.username,
-                            "total_wins": user.total_wins_multiplayer} for user in top_players_by_wins]
-    leaderboard_by_points = [{"username": user.username,
-                              "total_points": user.total_points_multiplayer} for user in top_players_by_points]
+    result_list = [
+        {"username": user.username, "wins": user.total_wins_multiplayer}
+        for user in user_wins
+    ]
 
-    return {
-        "leaderboard_by_wins": leaderboard_by_wins,
-        "leaderboard_by_points": leaderboard_by_points
-    }
+    return result_list

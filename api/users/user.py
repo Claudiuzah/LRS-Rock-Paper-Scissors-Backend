@@ -96,12 +96,12 @@ async def get_user_profile_stats(user_id: str = Path(...), db: Session = Depends
         username=user.username,
         total_games_multiplayer=total_games_multiplayer,
         total_wins_multiplayer=total_wins_multiplayer,
-        total_points_multiplayer=0,  # Placeholder
+        total_points_multiplayer=0,
         win_percentage_multiplayer=win_percentage_multiplayer,
         loss_percentage_multiplayer=loss_percentage_multiplayer,
         total_games_singleplayer=total_games_singleplayer,
         total_wins_singleplayer=total_wins_singleplayer,
-        total_points_singleplayer=0,  # Placeholder
+        total_points_singleplayer=0,
         win_percentage_singleplayer=win_percentage_singleplayer,
         loss_percentage_singleplayer=loss_percentage_singleplayer
     )
