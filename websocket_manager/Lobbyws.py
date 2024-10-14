@@ -4,22 +4,68 @@ from uuid import uuid4
 # from db.models import Lobby
 from websocket_manager.ws import ConnectionManager
 
-
-# from api.lobby.utils import db_dependency
-
-
 class Lobbyws:
     def __init__(self):
         self.lobbies: Dict[str, dict] = {}
-        # self.lobbies: db.query(Lobby).filter(Lobby.id).first()
         self.manager = ConnectionManager()
 
     async def connect_to_lobby(self, websocket, lobby_id, access_token):
         if lobby_id not in self.lobbies:
             self.lobbies[lobby_id] = {"players": [], "moves": {}}
-        self.lobbies[lobby_id]["players"].append(websocket)
+
+        # Handle multiple connections for the same user
+        if access_token in self.manager.active_connections:
+            await self.manager.disconnect(access_token)  # Optionally disconnect the existing one
+
+        self.lobbies[lobby_id]["players"].append({"socket": websocket, "token": access_token})
+
+        # Ensure websocket connection is accepted
         await self.manager.connect(websocket, access_token=access_token)
+
+        # Broadcast player update to the lobby
+        await self.broadcast_player_update(lobby_id)
+
         print(f"Player {access_token} connected to lobby {lobby_id}")
+
+    async def handle_disconnection(self, websocket, access_token: str, lobby_id: str):
+        if lobby_id in self.lobbies:
+            players = self.lobbies[lobby_id]["players"]
+            player_to_remove = None
+
+            # Find the player in the lobby based on their access token
+            for player in players:
+                if player["token"] == access_token:
+                    player_to_remove = player
+                    break
+
+            # If the player was found, remove them from the lobby
+            if player_to_remove:
+                players.remove(player_to_remove)
+                await self.manager.disconnect(access_token)
+                print(f"Player {access_token} disconnected from lobby {lobby_id}")
+
+                # Broadcast player update to the lobby
+                await self.broadcast_player_update(lobby_id)
+
+            # If the lobby is now empty, close it
+            if len(players) == 0:
+                await self.close_lobby(lobby_id)
+
+    async def broadcast_player_update(self, lobby_id):
+        if lobby_id in self.lobbies:
+            players = [player["token"] for player in self.lobbies[lobby_id]["players"]]
+            message = {"type": "playerUpdate", "players": players}
+            for player in self.lobbies[lobby_id]["players"]:
+                await player["socket"].send_json(message)
+
+    def get_first_available_lobby(self):
+        for lobby_id, lobby_data in self.lobbies.items():
+            if len(lobby_data["players"]) < 4:
+                return lobby_id
+
+        lobby_id = str(uuid4())
+        self.lobbies[lobby_id] = {"players": [], "moves": {}}
+        return lobby_id
 
     async def close_lobby(self, lobby_id):
         if lobby_id in self.lobbies:
@@ -27,7 +73,7 @@ class Lobbyws:
             for ws in players:
                 try:
                     access_token = next(
-                        (token for token, socket in self.manager.active_connections.items() if socket == ws), None)
+                        (token for token, socket in self.manager.active_connections.items() if socket == ws["socket"]), None)
                     if access_token:
                         await self.manager.disconnect(access_token)
                 except Exception as e:
@@ -36,8 +82,8 @@ class Lobbyws:
 
     async def broadcast_to_lobby(self, lobby_id: str, message: str):
         if lobby_id in self.lobbies:
-            for ws in self.lobbies[lobby_id]["players"]:
-                await ws.send_text(message)
+            for player in self.lobbies[lobby_id]["players"]:
+                await player["socket"].send_text(message)
 
     def create_lobby(self):
         lobby_id = str(uuid4())
@@ -81,7 +127,7 @@ class Lobbyws:
 
         return None, "No clear winner!"
 
-    def is_lobby_full(self, lobby_id, max_players=6):
+    def is_lobby_full(self, lobby_id, max_players=4):
         if lobby_id in self.lobbies:
             return len(self.lobbies[lobby_id]["players"]) >= max_players
         else:
