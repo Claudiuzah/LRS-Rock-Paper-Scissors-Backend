@@ -5,10 +5,10 @@ from db.models import User, User_statistics
 from api.users.utils import get_db
 from starlette import status
 
-user_stats_router = APIRouter(prefix="/api/user_stats", tags=["user_stats"])
+users_leaderboard_router = APIRouter(prefix="/api/leaderboard", tags=["leaderboard"])
 
 
-@user_stats_router.get("/username_wins", response_model=list[dict], status_code=status.HTTP_200_OK)
+@users_leaderboard_router.get("/", response_model=list[dict], status_code=status.HTTP_200_OK)
 async def get_usernames_and_wins(db: Session = Depends(get_db)):
     try:
         user_wins = (

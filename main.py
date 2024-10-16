@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
-from api.leaderboard.leaderboard_top_10 import user_stats_router
+from api.leaderboard.leaderboard_top_10 import users_leaderboard_router
 from api.lobby.lobby import lobby_router
 from api.users.auth import router, get_current_user
 from api.users.user import user_router
@@ -38,7 +38,7 @@ app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
 
-app.include_router(user_stats_router)
+app.include_router(users_leaderboard_router)
 
 manager = ConnectionManager()
 lobby_manager = Lobbyws()
