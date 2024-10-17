@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 from db.models import User, GameSession, Move, User_statistics, SessionLocal
-from api.users.utils import get_db
 from typing import Annotated
-from api.users.models import UserProfileStatistics, GameResult, UserStatsResponse, UpdateUserProfileStats, \
-    UpdateUserStats
+from api.users.models import UserProfileStatistics, GameResult, UserStatsResponse, UpdateUserStats
 from dependencies import get_current_user
 
 user_router = APIRouter(prefix="/api/user", tags=["user"])
