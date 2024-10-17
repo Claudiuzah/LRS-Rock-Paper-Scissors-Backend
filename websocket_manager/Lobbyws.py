@@ -3,7 +3,6 @@ from uuid import uuid4
 from db.models import session, User  # Importing the User model for querying players
 from websocket_manager.ws import ConnectionManager, decode_token
 
-
 class Lobbyws:
     def __init__(self):
         self.lobbies: Dict[str, dict] = {}
@@ -66,7 +65,11 @@ class Lobbyws:
             message = {"type": "playerUpdate", "players": player_tokens}
 
             for player in self.lobbies[lobby_id]["players"]:
-                await player["socket"].send_json(message)
+                try:
+                    if not player["socket"].client_state.CLOSED:  # Ensure WebSocket is still open
+                        await player["socket"].send_json(message)
+                except Exception as e:
+                    print(f"Error sending player update: {e}")
 
     async def broadcast_all_players(self, all_players, online_players):
         """Broadcasts all players (online/offline status) to all connected players."""
@@ -81,7 +84,11 @@ class Lobbyws:
         # Broadcast to all players in all lobbies
         for lobby_id, lobby_data in self.lobbies.items():
             for player in lobby_data["players"]:
-                await player["socket"].send_json(message)
+                try:
+                    if not player["socket"].client_state.CLOSED:  # Ensure WebSocket is still open
+                        await player["socket"].send_json(message)
+                except Exception as e:
+                    print(f"Error sending all players update: {e}")
 
     def get_all_players(self):
         """Fetch all players from the database, both online and offline."""
@@ -134,7 +141,11 @@ class Lobbyws:
         """Broadcast a text message to all players in a lobby."""
         if lobby_id in self.lobbies:
             for player in self.lobbies[lobby_id]["players"]:
-                await player["socket"].send_text(message)
+                try:
+                    if not player["socket"].client_state.CLOSED:  # Ensure WebSocket is still open
+                        await player["socket"].send_text(message)
+                except Exception as e:
+                    print(f"Error broadcasting message to lobby {lobby_id}: {e}")
 
     def create_lobby(self):
         """Creates a new lobby and returns its ID."""
