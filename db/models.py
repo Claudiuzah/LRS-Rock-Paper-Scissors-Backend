@@ -1,6 +1,7 @@
-import os
+from sqlalchemy import Integer, String
 from dotenv import load_dotenv
-
+import os
+import uuid
 load_dotenv()
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, sessionmaker
 from sqlalchemy import ForeignKey, create_engine, ARRAY
@@ -12,7 +13,6 @@ HOSTNAME = os.getenv("HOSTNAME")
 # from datetime import datetime
 
 
-import uuid
 
 engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{HOSTNAME}:5432/{DB_NAME}")
 
@@ -37,6 +37,17 @@ class User(Base):
             "password": str(self.hashed_password)
 
         }
+
+
+class User_statistics(Base):
+    __tablename__ = "user_stats"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    total_games_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_wins_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_points_multiplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_games_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_wins_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
+    total_points_singleplayer: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class Lobby(Base):

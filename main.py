@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
+from api.leaderboard.leaderboard_top_10 import users_leaderboard_router
 from api.lobby.lobby import lobby_router
 from api.users.auth import router, get_current_user
 from api.users.user import user_router
@@ -37,6 +38,8 @@ app.include_router(lobby_router)
 app.include_router(router)
 app.include_router(user_router)
 
+app.include_router(users_leaderboard_router)
+
 manager = ConnectionManager()
 lobby_manager = Lobbyws()
 
@@ -54,6 +57,7 @@ async def websocket_endpoint(websocket: WebSocket, access_token: str):
     except WebSocketDisconnect as e:
         # Handle player disconnection
         await lobby_manager.handle_disconnection(websocket, access_token, lobby_id)
+        await manager.disconnect(access_token)
         print(f"WebSocket connection closed for: {access_token}")
 
 
