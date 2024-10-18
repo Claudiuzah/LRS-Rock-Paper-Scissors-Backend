@@ -11,7 +11,6 @@ from jose import JWTError, jwt
 import os
 from fastapi.responses import JSONResponse
 
-
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
@@ -48,7 +47,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, create_user_request: CreateUserRequest):
-    existing_user = db.query(User).filter(User.username == create_user_request.username).first()
+    existing_user = db.query(User).filter_by(username=create_user_request.username).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username already exists")
 
@@ -65,6 +64,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
 
 
 TOKEN_EXPIRATION_MINUTES = 30
+
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
@@ -108,12 +108,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
 
 @router.get("/online_users")
 async def get_online_users(request: Request):
-
     online_user = request.session.get("online_user")
     if online_user:
         return JSONResponse(content={"online_user": online_user})
     else:
         return JSONResponse(content={"online_user": None})
+
 
 # @router.post("/logout")
 # async def logout(request: Request):
