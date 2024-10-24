@@ -90,7 +90,10 @@ class Lobbyws:
             return [{"id": str(p.id), "username": p.username} for p in all_players]
         except Exception as e:
             print(f"Error fetching players: {e}")
+            session.rollback()  # Rollback în caz de eroare
             return []
+        finally:
+            session.close()  # Închide sesiunea indiferent de rezultat
 
     def get_online_players(self):
         """Return a list of currently online players."""
@@ -110,7 +113,7 @@ class Lobbyws:
     def get_first_available_lobby(self):
         """Return the first available lobby, or create a new one."""
         for lobby_id, lobby_data in self.lobbies.items():
-            if len(lobby_data["players"]) < 4:
+            if len(lobby_data["players"]) < 6   :
                 return lobby_id
 
         return self.create_lobby()

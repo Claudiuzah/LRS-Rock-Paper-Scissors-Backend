@@ -64,7 +64,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
     return {"message": "User created successfully"}
 
 
-TOKEN_EXPIRATION_MINUTES = 30
+TOKEN_EXPIRATION_MINUTES = 60*24
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
@@ -135,7 +135,7 @@ def get_user(user_id: str, db=Depends(get_db)):
 
 
 def validate_password(password: str) -> bool:
-    if len(password) < 8:
+    if len(password) < 4:
         print(1)
         return False
 
