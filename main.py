@@ -1,6 +1,6 @@
 import os
 from typing import Annotated
-
+import json
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -48,12 +48,34 @@ async def websocket_endpoint(websocket: WebSocket, access_token: str):
 
     try:
         while True:
+
             message = await websocket.receive_text()
             print(f"Message received from client {access_token} in lobby {lobby_id}: {message}")
             await lobby_manager.broadcast_to_lobby(lobby_id, message)
-    except WebSocketDisconnect as e:
-        # Handle player disconnection
+
+            try:
+                message_data = json.loads(message)
+                event = message_data.get("event")
+
+                if event == "player ready":
+                    player_data = message_data.get("data", {})
+                    player_name = player_data.get("name")
+                    player_ready = player_data.get("ready", False)
+
+                    print('testulet')
+
+                    await lobby_manager.process_player_ready(lobby_id, player_name, player_ready)
+
+                else:
+                    await lobby_manager.broadcast_to_lobby(lobby_id, message)
+
+            except json.JSONDecodeError:
+                print(f"Failed to decode JSON message: {message}")
+
+    except WebSocketDisconnect:
+        # Handle disconnection
         await lobby_manager.handle_disconnection(websocket, access_token, lobby_id)
+
         print(f"WebSocket connection closed for: {access_token}")
 
 

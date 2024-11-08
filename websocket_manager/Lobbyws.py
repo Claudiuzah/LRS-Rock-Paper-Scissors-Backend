@@ -11,7 +11,7 @@ class Lobbyws:
 
     async def connect_to_lobby(self, websocket, lobby_id, access_token):
         if lobby_id not in self.lobbies:
-            self.lobbies[lobby_id] = {"players": [], "moves": {}}
+            self.lobbies[lobby_id] = {"players": [], "moves": {}, "ready_players": []}
 
         # Disconnect previous connections with the same token
         if access_token in self.manager.active_connections:
@@ -23,6 +23,7 @@ class Lobbyws:
 
         # Broadcast updated player list to the lobby
         await self.broadcast_player_update(lobby_id)
+        # await self.get_ready_players(lobby_id, websocket)
 
         # Fetch all players (from DB) and online players (from active connections)
         all_players = self.get_all_players()
@@ -113,7 +114,7 @@ class Lobbyws:
     def get_first_available_lobby(self):
         """Return the first available lobby, or create a new one."""
         for lobby_id, lobby_data in self.lobbies.items():
-            if len(lobby_data["players"]) < 6   :
+            if len(lobby_data["players"]) < 6:
                 return lobby_id
 
         return self.create_lobby()
@@ -124,7 +125,8 @@ class Lobbyws:
             for player in self.lobbies[lobby_id]["players"]:
                 try:
                     access_token = next(
-                        (token for token, socket in self.manager.active_connections.items() if socket == player["socket"]),
+                        (token for token, socket in self.manager.active_connections.items() if
+                         socket == player["socket"]),
                         None)
                     if access_token:
                         await self.manager.disconnect(access_token)
@@ -142,7 +144,7 @@ class Lobbyws:
     def create_lobby(self):
         """Creates a new lobby and returns its ID."""
         lobby_id = str(uuid4())
-        self.lobbies[lobby_id] = {"players": [], "moves": {}}
+        self.lobbies[lobby_id] = {"players": [], "moves": {}, "ready_players": []}
         return lobby_id
 
     def submit_move(self, lobby_id, access_token, move):
@@ -181,3 +183,22 @@ class Lobbyws:
     def is_lobby_full(self, lobby_id, max_players=4):
         """Check if a lobby has reached the maximum number of players."""
         return len(self.lobbies.get(lobby_id, {"players": []})["players"]) >= max_players
+
+    async def process_player_ready(self, lobby_id, player_name, player_ready):
+        ready_players = self.lobbies[lobby_id]["ready_players"]
+
+        if player_ready is True:
+            if player_name not in ready_players:
+                ready_players.append(player_name)
+        else:
+            if player_name in ready_players:
+                ready_players.remove(player_name)
+
+        message = {
+            "type": "readyPlayers",
+            "readyPlayers": ready_players
+        }
+        print(message)
+        if lobby_id in self.lobbies:
+            for player in self.lobbies[lobby_id]["players"]:
+                await player["socket"].send_json(message)
