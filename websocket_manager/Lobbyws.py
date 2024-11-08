@@ -44,12 +44,21 @@ class Lobbyws:
 
             if player_to_remove:
                 players.remove(player_to_remove)
+
                 await self.manager.disconnect(access_token)
                 print(f"Player {access_token} disconnected from lobby {lobby_id}")
 
                 # Broadcast updated player list to the lobby
                 await self.broadcast_player_update(lobby_id)
-
+                #TODO:AICI BAGA REMOVE READY PLAYER
+                self.lobbies[lobby_id]["ready_players"] = []
+                message = {
+                    "type": "readyPlayers",
+                    "readyPlayers": self.lobbies[lobby_id]["ready_players"]
+                }
+                if lobby_id in self.lobbies:
+                    for player in self.lobbies[lobby_id]["players"]:
+                        await player["socket"].send_json(message)
                 # Update and broadcast player status (all vs online)
                 all_players = self.get_all_players()
                 online_players = self.get_online_players()
@@ -202,3 +211,4 @@ class Lobbyws:
         if lobby_id in self.lobbies:
             for player in self.lobbies[lobby_id]["players"]:
                 await player["socket"].send_json(message)
+                #TODO:cand playerul da disconnect sa il scot din lista cu ready ceva gen
