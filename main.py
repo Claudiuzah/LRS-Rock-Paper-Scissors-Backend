@@ -99,8 +99,7 @@ async def read_root(user: dict = Depends(get_current_user), db: Session = Depend
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
     return {"User": user}
 
+import uvicorn
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host=HOST, port=int(PORT))
+    uvicorn.run('main:app', host=HOST, port=int(PORT),reload=True)
